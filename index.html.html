@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6366F1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ProjectFlow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ProjectFlow v2.2 — Master Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --text:#1E1B3A;--muted:#6B6F8C;--dim:#9498B8;--accent:#6366F1;--accent-soft:rgba(99,102,241,.12);
+  --border:rgba(99,102,241,.16);--glass:rgba(255,255,255,.74);--ok:#10B981;--warn:#D97706;--bad:#DC2626;
+  --cols:minmax(180px,1fr) 92px 116px 50px 50px 150px;--lw:718px;--rowh:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans Thai','Noto Sans',system-ui,sans-serif;color:var(--text);height:100vh;height:100dvh;overflow:hidden;font-size:13px;
+  background:radial-gradient(circle at 8% 10%,rgba(165,180,252,.5),transparent 45%),radial-gradient(circle at 92% 18%,rgba(216,180,254,.4),transparent 45%),radial-gradient(circle at 25% 90%,rgba(167,243,208,.3),transparent 45%),linear-gradient(160deg,#E8ECFB,#F3EEFB 55%,#fff);background-attachment:fixed}
+button,input,select,textarea{font-family:inherit;font-size:13px;color:var(--text)}
+button{cursor:pointer}
+[hidden]{display:none!important}
+
+/* login */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:2000}
+.lcard{width:400px;max-width:94vw;background:var(--glass);backdrop-filter:blur(20px);border:1px solid #fff;border-radius:22px;padding:30px;box-shadow:0 24px 64px rgba(99,102,241,.18)}
+.lcard h1{font-size:24px;font-weight:800;background:linear-gradient(135deg,#312E81,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px}
+.lcard .sub{color:var(--muted);margin-bottom:20px}
+.lerr{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--bad);border-radius:10px;padding:9px 12px;margin-bottom:12px;font-size:12.5px}
+
+/* login role picker */
+.rolepick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rp{cursor:pointer;display:block;position:relative}
+.rp input{position:absolute;opacity:0;pointer-events:none}
+.rp span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:11px 8px;border:1.5px solid var(--border);border-radius:12px;background:rgba(255,255,255,.7);font-weight:700;transition:.12s}
+.rp span small{font-weight:500;color:var(--muted);font-size:11px}
+.rp input:checked+span{border-color:var(--accent);background:var(--accent-soft);color:#4F46E5;box-shadow:0 0 0 3px var(--accent-soft)}
+.rp input:focus-visible+span{outline:2px solid var(--accent)}
+.trendgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px}
+
+/* controls */
+label.fl{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px}
+.in{width:100%;background:rgba(255,255,255,.8);border:1px solid var(--border);border-radius:9px;padding:8px 10px;outline:none}
+.in:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.in:disabled{background:rgba(148,152,184,.12);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.7);font-weight:500;transition:.12s;white-space:nowrap}
+.btn:hover{background:#fff;border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}.btn.pri:hover{background:#5558e3}
+.btn.danger{color:var(--bad);border-color:rgba(239,68,68,.35)}
+.btn.on{background:var(--accent-soft);border-color:var(--accent);color:#4F46E5}
+.btn:disabled{opacity:.5;pointer-events:none}
+.chip{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.chip.ok{background:rgba(16,185,129,.14);color:#047857}.chip.warn{background:rgba(245,158,11,.18);color:#B45309}
+.chip.bad{background:rgba(239,68,68,.14);color:#B91C1C}.chip.gray{background:rgba(148,152,184,.18);color:var(--muted)}
+
+/* app shell */
+.topbar{height:56px;display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--glass);backdrop-filter:blur(20px);border-bottom:1px solid #fff}
+.brand{font-weight:800;font-size:16px;white-space:nowrap}.brand span{font-weight:500;color:var(--muted);font-size:12px;margin-left:6px}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.55);padding:3px;border-radius:10px;overflow:auto}
+.tabs button{border:none;background:none;padding:6px 13px;border-radius:8px;font-weight:600;color:var(--muted);white-space:nowrap}
+.tabs button.on{background:var(--accent);color:#fff}
+.spacer{flex:1}
+#sync{font-size:11.5px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.7);border:1px solid var(--border);cursor:pointer;white-space:nowrap}
+#roleBadge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+main{height:calc(100vh - 56px);height:calc(100dvh - 56px);padding:14px 18px 18px}
+.page{display:none;flex-direction:column;height:100%;min-height:0}.page.on{display:flex}
+.pad{overflow:auto;padding-bottom:30px}
+
+/* gantt toolbar */
+.gtool{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.gtool .sep{width:1px;height:22px;background:var(--border)}
+.gtool select,.gtool input{width:auto;padding:6px 9px}
+.legend{display:flex;gap:12px;align-items:center;font-size:11.5px;color:var(--muted);margin-left:auto;flex-wrap:wrap}
+.legend i{display:inline-block;width:22px;height:10px;border-radius:6px;vertical-align:middle;margin-right:4px}
+
+/* gantt */
+#gScroll{flex:1;min-height:0;overflow:auto;background:var(--glass);border:1px solid var(--border);border-radius:14px;position:relative}
+.g-inner{min-width:max-content}
+.g-head{position:sticky;top:0;z-index:6;display:flex;height:48px;background:#F4F5FF;border-bottom:1px solid var(--border)}
+.g-hl{position:sticky;left:0;z-index:7;width:var(--lw);flex:none;display:grid;grid-template-columns:var(--cols);align-items:center;background:#F0F1FF;border-right:2px solid var(--border);font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.g-hl>div{padding:0 8px}
+.g-hd{position:relative;flex:none}
+.hc{position:absolute;height:24px;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:var(--muted);border-left:1px solid rgba(99,102,241,.1);overflow:hidden;white-space:nowrap}
+.hc.top{top:0;font-weight:700;color:var(--text);justify-content:center;padding:0;border-bottom:1px solid rgba(99,102,241,.1)}
+.hc:not(.top){top:24px}.hc.cur{background:rgba(239,68,68,.14);color:var(--bad);font-weight:800}
+.g-body{position:relative}
+.g-row{display:flex;height:var(--rowh);border-bottom:1px solid rgba(99,102,241,.1)}
+.g-left{position:sticky;left:0;z-index:4;width:var(--lw);flex:none;display:grid;grid-template-columns:var(--cols);align-items:center;background:#fff;border-right:2px solid var(--border);cursor:pointer}
+.g-row:hover .g-left{background:#F6F7FF}
+.g-row.lv1 .g-left{background:#EEF0FF;font-weight:700}.g-row.lv1:hover .g-left{background:#E6E9FF}
+.g-row.lv2 .g-left{background:#FAFAFF;font-weight:600}
+.g-left>div{padding:0 8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px}
+.c-name{display:flex;align-items:center;gap:6px;min-width:0}
+.c-name .nm{overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
+.tog{width:14px;height:14px;line-height:12px;font-size:10px;text-align:center;color:var(--muted);flex:none;cursor:pointer}.tog:not(:empty){border:1px solid #C7CAE6;border-radius:3px;background:#fff}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.acts{display:none;margin-left:auto;gap:3px;flex:none}.g-row:hover .acts{display:flex}
+.ab{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.ab.add{background:var(--accent-soft);color:var(--accent)}.ab.del{background:rgba(239,68,68,.14);color:var(--bad)}
+.c-pct{padding:0 2px!important;text-overflow:clip!important;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}.c-pct.low{color:var(--bad)}
+.c-plan{color:var(--muted);font-size:11px}
+.g-track{position:relative;flex:none;background-image:var(--gi);background-size:var(--gs);background-position:var(--gp)}
+.bar{position:absolute;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;color:#fff;display:flex;align-items:center;justify-content:center;overflow:visible;height:16px}
+.bar span{pointer-events:none;text-shadow:0 1px 1px rgba(0,0,0,.3)}
+.bar.plan{top:7px}
+.bar.act{top:26px}.bar.act.seg{border-radius:0;border-right:2px solid #fff;box-sizing:border-box}.bar.act.seg:first-of-type{border-radius:4px 0 0 4px}
+.bar.act.over{background:repeating-linear-gradient(45deg,rgba(220,38,38,.6) 0 3px,transparent 3px 7px);box-shadow:inset 0 -3px 0 #DC2626;pointer-events:none;z-index:2;border-radius:0 4px 4px 0}
+.bar.wait{top:26px;border:1.5px dashed #EF4444;color:#EF4444;background:rgba(239,68,68,.06);text-shadow:none}
+.bdg{display:inline-block;min-width:16px;padding:0 5px;margin-left:6px;border-radius:9px;background:#EF4444;color:#fff;font-size:10px;font-weight:800;line-height:16px;text-align:center}
+.ms{position:absolute;width:13px;height:13px;transform:rotate(45deg);border-radius:2px;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ms.plan{top:9px;background:#0F766E}.ms.act{top:28px}.ms.wait{top:28px;background:#fff;border:2px solid #EF4444}
+.ms-l{position:absolute;top:7px;font-size:10.5px;font-weight:700;color:#0F766E;white-space:nowrap;pointer-events:none}
+.ms-link{position:absolute;top:34px;height:2px;background:#EF4444;z-index:1;pointer-events:none}
+svg.g-dep{position:absolute;left:var(--lw);top:0;pointer-events:none;z-index:4;overflow:hidden}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.chips span{background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:3px 6px 3px 10px;font-size:11.5px;font-weight:600;display:inline-flex;gap:6px;align-items:center}.chips b{cursor:pointer;opacity:.7}.chips b:hover{opacity:1}
+.chk{display:flex;gap:8px;align-items:center;font-size:12.5px;margin:4px 0 10px;cursor:pointer}
+.files{display:flex;flex-wrap:wrap;gap:10px}.fl-i{width:116px;border:1px solid var(--border);border-radius:10px;background:#fff;overflow:hidden;position:relative;font-size:10.5px}
+.fl-i .th{height:78px;background:#EEF0FF center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px}
+.fl-i .nm{padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fl-i .mt{padding:0 6px 5px;color:var(--muted);font-size:10px}
+.fl-i .x{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:9px;background:rgba(0,0,0,.55);color:#fff;text-align:center;line-height:18px;cursor:pointer;font-size:11px}
+.nt{background:var(--glass);border:1px solid #fff;border-left:5px solid var(--nc,#6366F1);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 6px 20px rgba(99,102,241,.08)}
+.nt.unread{box-shadow:0 0 0 2px var(--nc,#6366F1),0 6px 20px rgba(99,102,241,.12)}
+.nt h4{font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.nt .bd{white-space:pre-wrap;font-size:13px;line-height:1.7;margin:8px 0}.nt .mt{font-size:11px;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nt .new{background:#EF4444;color:#fff;border-radius:8px;padding:0 6px;font-size:10px}
+.fchip{border:1px solid var(--border);background:#fff;border-radius:16px;padding:4px 12px;font-size:12px;cursor:pointer;margin-right:4px}.fchip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.si{display:inline-flex;vertical-align:middle;line-height:1;width:16px;justify-content:center;font-size:13px;margin-right:4px;flex:none}
+.si.ok{color:#22A559}.si.bad{color:#EF4444}.si.run{color:#F59E0B}.si.idle{color:#9CA3AF}
+.bar.drag{cursor:grab}.bar.drag:active{cursor:grabbing}
+.h{position:absolute;top:-2px;bottom:-2px;width:8px;cursor:ew-resize;z-index:2}.h.l{left:-3px}.h.r{right:-3px}
+.today-line{position:absolute;top:0;bottom:0;width:2px;background:#EF4444;z-index:3;pointer-events:none;box-shadow:0 0 6px rgba(239,68,68,.5)}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+#tip{position:fixed;z-index:1500;background:#1E1B3A;color:#fff;border-radius:10px;padding:10px 13px;font-size:12px;pointer-events:none;display:none;min-width:230px;max-width:300px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#tip .tl{color:#A5A8C3;margin-bottom:5px}#tip .tr{display:flex;justify-content:space-between;gap:12px;margin-top:3px}#tip .tr span:first-child{color:#A5A8C3}
+
+/* cards / tables */
+.card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid #fff;border-radius:16px;padding:18px;box-shadow:0 8px 28px rgba(99,102,241,.09);margin-bottom:16px}
+.card h3{font-size:14px;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--glass);border:1px solid #fff;border-radius:14px;padding:14px 16px;box-shadow:0 6px 20px rgba(99,102,241,.08)}
+.kpi .l{font-size:11.5px;color:var(--muted);margin-bottom:4px}.kpi .v{font-size:26px;font-weight:800;line-height:1.1}.kpi .s{font-size:11px;color:var(--dim);margin-top:2px}
+table.t{width:100%;border-collapse:collapse}
+table.t th{text-align:left;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;border-bottom:1px solid var(--border);background:rgba(244,245,255,.7);position:sticky;top:0;z-index:1}
+table.t td{padding:8px 10px;border-bottom:1px solid rgba(99,102,241,.08);vertical-align:middle}
+table.t tr.g1 td{background:#EEF0FF;font-weight:700}table.t tr.g2 td{background:#F8F8FF;font-weight:600;color:var(--muted);font-size:12px}
+table.t tr.edited td{background:rgba(245,158,11,.08)}table.t tr.upd td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
+.pbar{height:8px;border-radius:5px;background:rgba(148,152,184,.2);overflow:hidden;min-width:90px}.pbar>i{display:block;height:100%;border-radius:5px}
+.mini{width:70px}.mini.in{padding:5px 7px}
+.msg{font-size:12px;color:var(--muted)}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(99,102,241,.2);backdrop-filter:blur(5px);z-index:1200;display:none;align-items:center;justify-content:center;padding:14px}
+.ov.on{display:flex}
+.modal{background:rgba(255,255,255,.95);border:1px solid #fff;border-radius:18px;width:640px;max-width:100%;max-height:92vh;overflow:auto;padding:22px;box-shadow:0 24px 64px rgba(99,102,241,.25)}
+.modal h2{font-size:16px;margin-bottom:4px}.crumb{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+.sec{font-size:12px;font-weight:800;margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fld{margin-bottom:10px}.foot{display:flex;gap:8px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.banner{border-radius:10px;padding:9px 12px;font-size:12px;margin:8px 0}.banner.lock{background:rgba(245,158,11,.12);color:#92400E;border:1px solid rgba(245,158,11,.3)}
+.banner.info{background:var(--accent-soft);color:#4338CA}
+.sw{display:flex;gap:8px}.sw i{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent}.sw i.sel{outline:2px solid var(--text);outline-offset:2px}
+.hist{max-height:130px;overflow:auto;font-size:11.5px}.hist div{display:flex;gap:10px;padding:4px 0;border-bottom:1px dashed rgba(99,102,241,.15)}
+.hist span:first-child{color:var(--muted);width:90px;flex:none}
+#toasts{position:fixed;right:18px;bottom:18px;z-index:3000;display:flex;flex-direction:column;gap:8px}
+.toast{background:#fff;border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:360px;font-size:12.5px}
+.toast.warn{border-left-color:#F59E0B}.toast.ok{border-left-color:var(--ok)}
+#saving{position:fixed;inset:0;z-index:2500;display:none;align-items:flex-start;justify-content:center;padding-top:70px;background:rgba(255,255,255,.25)}
+#saving.on{display:flex}#saving span{background:#1E1B3A;color:#fff;padding:8px 18px;border-radius:20px;font-size:12.5px}
+
+@media(max-width:1100px){:root{--cols:minmax(170px,1fr) 116px 50px 50px 112px;--lw:560px}.hide-md{display:none!important}}
+@media(max-width:800px){:root{--cols:minmax(120px,1fr) 108px;--lw:250px}.hide-md,.hide-sm{display:none!important}.grid2,.grid3{grid-template-columns:1fr}.brand span{display:none}}
+
+/* tabs: desktop = ข้อความเต็ม · มือถือ = แถบเมนูด้านล่าง */
+.tabs button{display:flex;align-items:center;gap:5px;position:relative}
+.tabs .ts{display:none}.tabs .ti{font-weight:400}
+
+/* skeleton / network */
+.sk{background:linear-gradient(90deg,rgba(148,152,184,.14) 25%,rgba(148,152,184,.3) 37%,rgba(148,152,184,.14) 63%);background-size:400% 100%;animation:skm 1.3s ease infinite;border-radius:8px}
+@keyframes skm{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.sk-row{height:34px;margin:9px 12px}.sk-card{height:130px;margin-bottom:16px;border-radius:16px}.sk-kpi{height:80px;border-radius:14px}
+#netbar{position:fixed;left:50%;transform:translateX(-50%);top:62px;z-index:2600;background:#B45309;color:#fff;border-radius:20px;padding:6px 16px;font-size:12px;display:none;box-shadow:0 6px 18px rgba(0,0,0,.25);pointer-events:none;max-width:92vw;text-align:center}
+.toast{display:flex;align-items:center;gap:6px}
+
+/* filter bar / saved views */
+.fbar{padding:8px 10px;background:rgba(255,255,255,.55);border:1px solid var(--border);border-radius:12px}
+.fbar select.in{max-width:190px}
+.fbar #fClear{border-color:rgba(239,68,68,.4);color:var(--bad)}
+
+/* reorder / comments / misc */
+.dh{cursor:grab;color:var(--dim);font-size:11px;padding:0 2px;flex:none;display:none;user-select:none;touch-action:none;letter-spacing:-2px}
+.g-row:hover .dh{display:inline-block}.dh:active{cursor:grabbing}
+.g-row.ro-src{opacity:.45}
+.ro-line{position:absolute;left:0;right:0;height:3px;background:var(--accent);z-index:8;pointer-events:none;border-radius:2px;box-shadow:0 0 6px rgba(99,102,241,.6)}
+.cc{font-size:10px;color:var(--accent);font-weight:700;flex:none;margin-left:2px}
+.cm{border-bottom:1px dashed rgba(99,102,241,.18);padding:7px 0}.cm .h2{display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--muted)}
+.cm .tx{white-space:pre-wrap;font-size:12.5px;line-height:1.6;margin-top:2px;word-break:break-word}.mn{color:var(--accent)}
+
+/* KPI */
+.kr{display:grid;grid-template-columns:minmax(150px,1.1fr) 150px minmax(150px,1fr) minmax(130px,.8fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(99,102,241,.1)}
+.kr:last-child{border-bottom:none}
+
+/* workload heatmap */
+.wlw{overflow:auto;flex:1;min-height:0}
+table.wl{border-collapse:separate;border-spacing:0;width:100%}
+table.wl th,table.wl td{padding:7px 6px;border-bottom:1px solid rgba(99,102,241,.08);text-align:center;font-size:12px;white-space:nowrap}
+table.wl th{position:sticky;top:0;background:#F4F5FF;z-index:2;font-size:10.5px;color:var(--muted);line-height:1.3}
+table.wl th.cw{background:rgba(239,68,68,.14);color:var(--bad)}
+table.wl td:first-child,table.wl th:first-child{position:sticky;left:0;text-align:left;background:#fff;z-index:3;min-width:118px;font-weight:700;cursor:pointer;padding-left:12px}
+table.wl th:first-child{background:#F4F5FF;z-index:4;cursor:default}
+table.wl td.c{cursor:pointer;font-weight:700;min-width:46px}
+table.wl td.c.sel{outline:2px solid var(--accent);outline-offset:-2px}
+
+@media(hover:none){.acts{display:flex}.dh{display:inline-block}}
+
+/* ───── มือถือ ───── */
+@media(max-width:800px){
+  .topbar{backdrop-filter:none;-webkit-backdrop-filter:none;padding:0 10px;gap:8px}
+  main{height:calc(100vh - 118px - env(safe-area-inset-bottom));height:calc(100dvh - 118px - env(safe-area-inset-bottom));padding:10px 10px 6px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:900;border-radius:0;justify-content:space-around;gap:0;padding:4px 2px calc(4px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--border);overflow:visible}
+  .tabs button{flex:1;flex-direction:column;gap:1px;padding:5px 1px;font-size:9.5px;min-width:0;border-radius:10px}
+  .tabs .ti{font-size:18px;line-height:1}.tabs .tf{display:none}.tabs .ts{display:block;white-space:nowrap}
+  .tabs .bdg{position:absolute;top:0;right:4px;margin:0;padding:0 4px;min-width:15px;line-height:15px;font-size:9px}
+  #roleBadge{font-size:11px;padding:3px 8px}
+  .in,input,select,textarea{font-size:16px}
+  .legend{display:none}
+  .gtool{gap:6px}
+  .gtool.fbar select.in{flex:1 1 44%;min-width:0;max-width:none}
+  #fQ{width:100%!important;flex:1 1 100%}
+  .gtool:not(.fbar){flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.gtool:not(.fbar)>*{flex:none}
+  .kpis{grid-template-columns:repeat(2,1fr)}.kpi .v{font-size:22px}
+  #dashBody .grid2{grid-template-columns:minmax(0,1fr)}
+  #dashBody .card{overflow-x:auto;max-width:100%}
+  #dashBody .grid2>div{min-width:0;overflow-x:auto}
+  .ov{padding:0;align-items:flex-end}
+  .modal{width:100%!important;max-height:94vh;max-height:94dvh;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+  #toasts{right:10px;left:10px;bottom:calc(76px + env(safe-area-inset-bottom))}.toast{max-width:none}
+  #netbar{top:60px}
+  .kr{grid-template-columns:1fr}
+  .card{padding:14px}
+  table.cards thead{display:none}
+  table.cards,table.cards tbody{display:block;width:100%}
+  table.cards tr{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:12px}
+  table.cards tr.g1,table.cards tr.g2{display:block;background:#EEF0FF;padding:8px 12px}
+  table.cards tr.edited{background:rgba(245,158,11,.12)}
+  table.cards td{display:block;border:0!important;padding:3px 0!important;min-width:0;background:none!important;box-shadow:none!important}
+  table.cards td[data-l]::before{content:attr(data-l);display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+  table.cards td.full{grid-column:1 / -1}
+  table.cards td .in,table.cards td select{width:100%!important;min-width:0!important}
+  table.cards td .btn{width:100%;justify-content:center}
+}
+
+/* print / PDF */
+@media print{
+  @page{size:A3 landscape;margin:8mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  .topbar,#toasts,#saving,#tip,.acts,.dh,.ov,#login,#netbar,.fbar{display:none!important}
+  .gtool>*:not(.legend){display:none!important}
+  .gtool{margin-bottom:6px}
+  main{height:auto!important;padding:0!important}
+  .page.on{height:auto!important;display:block!important}
+  #gScroll{overflow:visible!important;border:none!important;background:#fff!important}
+  .pad{overflow:visible!important}
+  .g-inner{zoom:.7}
+  .g-head,.g-hl,.g-left{position:static!important}
+  .card,.kpi{box-shadow:none!important;backdrop-filter:none!important;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <h1>⚡ ProjectFlow</h1>
+    <div class="sub">Master Plan รายปี · Plan vs Actual</div>
+    <div class="lerr" id="lgErr"></div>
+    <div class="fld"><label class="fl">เข้าใช้งานในฐานะ</label>
+      <div class="rolepick">
+        <label class="rp"><input type="radio" name="lgRole" value="user" checked><span>👤 User<small>ผู้ใช้งาน · อัปเดตงาน</small></span></label>
+        <label class="rp"><input type="radio" name="lgRole" value="admin"><span>⭐ Admin<small>ผู้อนุมัติ · ปิดงาน/ล็อกแผน</small></span></label>
+      </div></div>
+    <div class="fld"><label class="fl">รหัสผ่าน</label><input class="in" id="lgPw" type="password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password"></div>
+    <div class="fld" id="lgUrlBox"><label class="fl">Apps Script Web App URL</label><input class="in" id="lgUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+    <button class="btn pri" id="lgBtn" style="width:100%;justify-content:center;height:42px;font-weight:700" onclick="doLogin()">เข้าสู่ระบบ →</button>
+    <div style="margin-top:12px;text-align:center"><a href="#" id="lgUrlToggle" style="font-size:11.5px;color:var(--muted)" onclick="$('lgUrlBox').hidden=false;return false">ตั้งค่าการเชื่อมต่อ</a></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="brand">⚡ ProjectFlow<span>Master Plan</span></div>
+    <nav class="tabs" id="tabs">
+      <button data-page="gantt" class="on"><b class="ti">📅</b><span class="tf">แผนงาน Plan/Actual</span><span class="ts">แผนงาน</span></button>
+      <button data-page="weekly"><b class="ti">📝</b><span class="tf">อัปเดตรายสัปดาห์</span><span class="ts">อัปเดต</span></button>
+      <button data-page="load"><b class="ti">👥</b><span class="tf">ภาระงาน</span><span class="ts">ภาระงาน</span></button>
+      <button data-page="dash"><b class="ti">📊</b><span class="tf">ภาพรวม</span><span class="ts">ภาพรวม</span></button>
+      <button data-page="notice"><b class="ti">📣</b><span class="tf">ประกาศ</span><span class="ts">ประกาศ</span><span class="bdg" id="noticeBdg" hidden></span></button>
+      <button data-page="review" id="tabReview" hidden><b class="ti">✅</b><span class="tf">รออนุมัติ</span><span class="ts">อนุมัติ</span><span class="bdg" id="reviewBdg" hidden></span></button>
+      <button data-page="admin" id="tabAdmin"><b class="ti">⚙️</b><span class="tf">ผู้ดูแล</span><span class="ts">ผู้ดูแล</span></button>
+    </nav>
+    <div class="spacer"></div>
+    <div id="sync" onclick="reload(true)" title="คลิกเพื่อโหลดข้อมูลล่าสุด">⚪ ยังไม่เชื่อมต่อ</div>
+    <div id="roleBadge"></div>
+    <button class="btn" onclick="logout()" title="ออกจากระบบ">⏏</button>
+  </header>
+  <main>
+    <!-- GANTT -->
+    <section class="page on" id="pg-gantt">
+      <div class="gtool">
+        <button class="btn pri" onclick="openItem(null,'')">＋ Master Plan</button>
+        <button class="btn" onclick="setCollapse(false)">⊞ ขยายทั้งหมด</button>
+        <button class="btn" onclick="setCollapse(true)">⊟ ย่อทั้งหมด</button>
+        <span class="sep"></span>
+        <button class="btn" onclick="shiftYear(-1)">◀</button>
+        <b id="yearLbl" style="min-width:92px;text-align:center"></b>
+        <button class="btn" onclick="shiftYear(1)">▶</button>
+        <span class="sep"></span>
+        <button class="btn" data-scale="day" onclick="setScale('day')">วัน</button>
+        <button class="btn" data-scale="week" onclick="setScale('week')">สัปดาห์</button>
+        <button class="btn" data-scale="month" onclick="setScale('month')">เดือน</button>
+        <button class="btn" onclick="scrollToToday()">📍 วันนี้</button>
+        <span class="sep"></span>
+        <button class="btn" onclick="exportCsv()" title="ส่งออกรายการงานเป็นไฟล์ CSV (เปิดใน Excel ได้)">⬇ CSV</button>
+        <button class="btn" onclick="printGantt()" title="พิมพ์ / บันทึกเป็น PDF (A3 แนวนอน)">🖨 พิมพ์</button>
+        <button class="btn" id="btnCopyYear" onclick="openCopyYear()" hidden>📋 คัดลอกแผนข้ามปี</button>
+        <div class="legend">
+          <span><i style="background:#334155;border-radius:4px"></i>Plan: Master/Action</span>
+          <span><i style="background:#94A3B8;border-radius:4px"></i>Plan: งานย่อย</span>
+          <span>Actual:</span>
+          <span><i style="background:#818CF8;border-radius:4px;width:14px"></i>รอ</span><span><i style="background:#38BDF8;border-radius:4px;width:14px"></i>วางแผน</span><span><i style="background:#FBBF24;border-radius:4px;width:14px"></i>กำลังทำ</span><span><i style="background:#A78BFA;border-radius:4px;width:14px"></i>รอตรวจ</span><span><i style="background:#34D399;border-radius:4px;width:14px"></i>เสร็จ</span>
+          <span><i style="background:#EF4444;border-radius:4px"></i>Delay (เกินแผน)</span>
+          <span><i style="background:rgba(239,68,68,.06);border:1.5px dashed #EF4444;border-radius:4px"></i>เลยวันเริ่มแต่ยังไม่เริ่ม</span>
+          <span><i style="background:#0F766E;width:11px;height:11px;transform:rotate(45deg);border-radius:2px"></i>&nbsp;Milestone</span>
+          <span style="color:#64748B">⤷ ลูกศร = ต้องรอ (แดง = ชนกัน)</span>
+        </div>
+      </div>
+      <div class="gtool fbar">
+        <select class="in" id="fDept" onchange="G.dept=this.value;refreshViews('');renderGantt()"></select>
+        <select class="in" id="fOwner" onchange="G.owner=this.value;refreshViews('');renderGantt()"></select>
+        <input class="in" id="fQ" placeholder="🔍 ค้นหาชื่อ / ผู้รับผิดชอบ / หมายเหตุ…" style="width:230px" oninput="G.qr=this.value;G.q=this.value.trim().toLowerCase();refreshViews('');renderGantt()">
+        <select class="in" id="fSt" onchange="G.st=this.value;refreshViews('');renderGantt()"></select>
+        <select class="in" id="fCat" onchange="G.cat=this.value;refreshViews('');renderGantt()"></select>
+        <span class="sep"></span>
+        <select class="in" id="fView" onchange="applyView(this.value)"></select>
+        <button class="btn" onclick="saveView()" title="บันทึกตัวกรอง + สเกลที่ใช้อยู่เป็นมุมมอง (เก็บในเครื่องนี้)">💾 บันทึกมุมมอง</button>
+        <button class="btn danger" id="fViewDel" onclick="delView()" hidden>🗑</button>
+        <button class="btn" id="fClear" onclick="clearFilters()" hidden>✕ ล้างตัวกรอง</button>
+        <span class="msg" id="fCount"></span>
+      </div>
+      <div id="gScroll"><div class="g-inner" id="gInner"></div></div>
+    </section>
+
+    <!-- WEEKLY -->
+    <section class="page" id="pg-weekly">
+      <div class="gtool">
+        <button class="btn" onclick="wkShift(-1)">◀</button>
+        <b id="wkLabel" style="min-width:200px;text-align:center"></b>
+        <button class="btn" onclick="wkShift(1)">▶</button>
+        <button class="btn" onclick="W.week=mondayOf(todayStr());renderWeekly()">สัปดาห์นี้</button>
+        <span class="sep"></span>
+        <select class="in" id="wkOwner" onchange="W.owner=this.value;renderWeekly()"></select>
+        <label class="btn" style="cursor:pointer"><input type="checkbox" id="wkAll" onchange="W.all=this.checked;renderWeekly()"> แสดงงานที่ยังไม่ถึงกำหนดด้วย</label>
+        <select class="in" id="wkDept" onchange="W.dept=this.value;renderWeekly()"></select>
+        <span class="msg" id="wkCount"></span>
+        <button class="btn" id="wkClear" style="margin-left:auto" onclick="clearDraft()" title="ล้างร่างที่ค้างอยู่ในเครื่องนี้">🗑 ล้างร่าง</button>
+        <button class="btn pri" id="wkSave" onclick="saveWeekly()">💾 บันทึกอัปเดตสัปดาห์นี้</button>
+      </div>
+      <div class="card pad" style="padding:0;flex:1;min-height:0;overflow:auto;margin:0">
+        <table class="t cards"><thead><tr><th>งาน</th><th>ผู้รับผิดชอบ</th><th>Plan</th><th>ปัจจุบัน</th><th>% ใหม่</th><th>สถานะ</th><th>หมายเหตุ / ปัญหา</th><th></th></tr></thead><tbody id="wkBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section class="page" id="pg-dash"><div class="pad" id="dashBody"></div></section>
+
+    <!-- WORKLOAD -->
+    <section class="page" id="pg-load">
+      <div class="gtool">
+        <b>👥 ภาระงานรายคน</b>
+        <button class="btn" onclick="loadShift(-4)">◀</button>
+        <button class="btn" onclick="L.start='';renderLoad()">สัปดาห์นี้</button>
+        <button class="btn" onclick="loadShift(4)">▶</button>
+        <span class="sep"></span>
+        <select class="in" id="lDept" onchange="L.dept=this.value;L.sel=null;renderLoad()"></select>
+        <label class="msg" style="display:flex;align-items:center;gap:6px">งานล้นเมื่อ ≥ <input class="in" id="lThr" type="number" min="1" max="50" value="5" style="width:64px" onchange="L.thr=Math.max(1,Math.round(+this.value)||5);renderLoad()"> งาน/สัปดาห์</label>
+      </div>
+      <div class="card pad" style="padding:0;flex:1;min-height:0;display:flex;flex-direction:column;margin:0">
+        <div class="wlw" id="loadBody"></div>
+        <div id="loadDetail" style="padding:12px 16px;border-top:1px solid var(--border)"></div>
+      </div>
+      <div class="msg" style="margin-top:8px">ตัวเลข = จำนวนงานที่ยังไม่เสร็จและมีช่วง Plan คาบเกี่ยวกับสัปดาห์นั้น · งานที่เลยกำหนดแต่ยังไม่ปิดจะนับต่อเนื่องถึงสัปดาห์ปัจจุบัน · แดง = ถึงเกณฑ์งานล้น · คลิกช่องเพื่อดูรายการ · คลิกชื่อเพื่อดูในแผนงาน</div>
+    </section>
+
+    <!-- NOTICES -->
+    <section class="page" id="pg-notice">
+      <div class="gtool">
+        <b>📣 ประกาศ</b>
+        <span class="sep"></span>
+        <span id="noticeFilters"></span>
+        <button class="btn" onclick="markAllSeen()">✓ อ่านทั้งหมด</button>
+        <button class="btn pri" style="margin-left:auto" onclick="openNotice()">＋ ประกาศใหม่</button>
+      </div>
+      <div class="pad" id="noticeBody" style="overflow:auto;flex:1;min-height:0"></div>
+    </section>
+
+    <!-- REVIEW -->
+    <section class="page" id="pg-review">
+      <div class="gtool">
+        <b>✅ งานรออนุมัติ</b><span class="msg" id="revCount"></span>
+        <span class="sep"></span>
+        <label class="btn" style="cursor:pointer"><input type="checkbox" id="revAll" onchange="revToggleAll(this.checked)"> เลือกทั้งหมด</label>
+        <button class="btn pri" id="revBulk" onclick="approveSelected()">✔ อนุมัติที่เลือก</button>
+        <span class="msg" style="margin-left:auto">User กรอก 100% / เสร็จสิ้น → ระบบส่งเป็น "รอตรวจสอบ" · Admin อนุมัติแล้วจึงปิดงาน หรือตีกลับพร้อมเหตุผล</span>
+      </div>
+      <div class="card pad" style="padding:0;flex:1;min-height:0;overflow:auto;margin:0">
+        <table class="t cards"><thead><tr><th style="width:32px"></th><th>งาน</th><th>ผู้รับผิดชอบ</th><th>Plan</th><th>%</th><th>ส่งตรวจเมื่อ</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="revBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section class="page" id="pg-admin"><div class="pad">
+      <div class="card"><h3>👥 รายชื่อผู้รับผิดชอบและแผนก</h3>
+        <p class="msg" style="margin-bottom:12px;line-height:1.7">พิมพ์ <b>บรรทัดละ 1 รายการ</b> · เก็บในชีต <b>Config</b> ของไฟล์นี้ — เพิ่ม/ลบคนหรือแผนกได้ทันที ไม่ต้องแก้โค้ดหรือแจกไฟล์ใหม่<br>รายการงานเดิมที่ใช้ชื่อที่ถูกลบออก จะยังเก็บชื่อนั้นไว้ (แค่ไม่โผล่ในตัวเลือกใหม่) · การเปลี่ยนชื่อคน = เพิ่มชื่อใหม่ แล้วแก้ผู้รับผิดชอบของงานเอง</p>
+        <div class="grid2"><div class="fld"><label class="fl">แผนก</label><textarea class="in" id="cfgDepts" rows="8" style="resize:vertical"></textarea></div>
+          <div class="fld"><label class="fl">ผู้รับผิดชอบ</label><textarea class="in" id="cfgOwners" rows="8" style="resize:vertical"></textarea></div></div>
+        <button class="btn pri" onclick="saveConfig()">💾 บันทึกรายชื่อ</button></div>
+      <div class="card">
+        <h3>📥 นำเข้าข้อมูลจาก ProjectFlow เดิม</h3>
+        <p class="msg" style="margin-bottom:12px;line-height:1.7">อ่านจากชีต <b>Tasks</b> และ <b>Projects</b> ในไฟล์ Google Sheet นี้ (ชีตเดิมไม่ถูกแก้ไขหรือลบ) ใช้ ID คงที่ จึงกดซ้ำได้ปลอดภัย — ค่าเริ่มต้นจะข้ามรายการที่เคยนำเข้าไปแล้ว
+        <br>⚠️ ข้อมูลเดิมไม่มีประวัติสถานะจริง ระบบจึงประมาณ % และวันที่ Actual จากสถานะ (ระบุไว้ในช่องหมายเหตุของแต่ละรายการ) ควรตรวจแก้ภายหลัง</p>
+        <div class="fld"><label class="fl">รูปแบบการจับคู่</label>
+          <label style="display:block;margin:6px 0"><input type="radio" name="mmode" value="A" checked> <b>A (แนะนำ)</b> โปรเจกต์เดิม → Action · งานเดิม → งานย่อย · จัดกลุ่มเป็น Master Plan ตามแผนก</label>
+          <label style="display:block;margin:6px 0"><input type="radio" name="mmode" value="B"> <b>B</b> โปรเจกต์เดิม → Master Plan · งานเดิม → Action</label>
+        </div>
+        <label style="display:block;margin:10px 0"><input type="checkbox" id="mOver"> เขียนทับรายการที่เคยนำเข้าแล้ว (จะทับการแก้ไขใน v2 ของรายการเหล่านั้น)</label>
+        <button class="btn pri" onclick="runMigrate()">📥 นำเข้าข้อมูลเดิม</button>
+        <div id="mResult" class="banner info" style="display:none;margin-top:14px"></div>
+      </div>
+      <div class="card"><h3>🔒 การล็อก Plan (Baseline)</h3>
+        <p class="msg" style="line-height:1.8">ใช้ปุ่ม 🔒 ในหน้าต่างรายละเอียดของ Master Plan (เฉพาะระดับอนุมัติ) — ระบบบันทึกวันที่ Plan ปัจจุบันของทั้งแผนผังเป็น Baseline<br>หลังล็อก ผู้ใช้ทั่วไปแก้วัน Plan / เพิ่ม-ลบรายการไม่ได้ แต่ยังอัปเดต Actual รายสัปดาห์ได้ตามปกติ · ผู้อนุมัติยังปรับ Plan ได้ และระบบจะแสดงส่วนต่างจาก Baseline</p></div>
+      <div class="card"><h3>📸 Snapshot SPI และ ✉ สรุปรายสัปดาห์</h3>
+        <p class="msg" style="line-height:1.8;margin-bottom:12px"><b>Snapshot</b> บันทึกค่า Plan% / Actual% / SPI ของทุก Master Plan ลงชีต <b>Snapshots</b> เพื่อวาดกราฟแนวโน้มในหน้า "ภาพรวม" (รันซ้ำวันเดียวกันจะทับของเดิม)<br>
+          <b>สรุปรายสัปดาห์</b> ส่งทางอีเมล (และ LINE ถ้าตั้งค่าไว้) เป็นรายการงานรออนุมัติ / เลยกำหนด / ค้างอัปเดตรายคน<br>
+          ให้ทำงานอัตโนมัติทุกวันศุกร์: ใน Apps Script รัน <code>setupDigest()</code> แล้ว <code>installWeeklyTrigger()</code> อย่างละ 1 ครั้ง</p>
+        <button class="btn" onclick="snapNow()">📸 บันทึก Snapshot ตอนนี้</button>
+        <button class="btn" onclick="sendDigestNow()">✉ ส่งสรุปตอนนี้</button>
+        <div id="dgResult" class="banner info" style="display:none;margin-top:14px"></div>
+      </div>
+    </div></section>
+  </main>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="ov" id="ovItem"><div class="modal" id="modalItem"></div></div>
+<div class="ov" id="ovNotice"><div class="modal" id="modalNotice" style="width:560px"></div></div>
+<div class="ov" id="ovCopy"><div class="modal" id="modalCopy" style="width:560px"></div></div>
+<div class="ov" id="ovKpi"><div class="modal" id="modalKpi" style="width:540px"></div></div>
+<!-- CONFIRM -->
+<div class="ov" id="ovConfirm"><div class="modal" style="width:420px"><h2 id="cfTitle"></h2><p class="msg" id="cfMsg" style="margin:10px 0 4px;line-height:1.7"></p><div class="foot" style="justify-content:flex-end"><button class="btn" onclick="closeConfirm()">ยกเลิก</button><button class="btn pri" id="cfOk">ยืนยัน</button></div></div></div>
+
+<datalist id="ownerList"></datalist>
+<div id="netbar">⚠️ ออฟไลน์ — รอเชื่อมต่ออินเทอร์เน็ต (ร่างที่กรอกไว้ยังอยู่ในเครื่อง)</div>
+<div id="tip"></div>
+<div id="toasts"></div>
+<div id="saving"><span>⏳ กำลังบันทึก…</span></div>
+
+<script>
+'use strict';
+// ═══════════ CONFIG ═══════════
+const API_URL_DEFAULT = ''; // ใส่ URL ของ Apps Script ตรงนี้ได้ หรือวางในหน้า login (ระบบจำไว้ในเบราว์เซอร์)
+let DEPTS = ['Calotte 1', 'Calotte 3', 'Calotte 4A', 'Calotte 4B', 'Mold'];
+let OWNERS = ['Pakpum', 'Praibul', 'Tawin', 'Pichit', 'Suranat', 'Apiwat', 'Pongnitis', 'Kanokwan', 'Nantawan', 'Banyate'];
+const CATS = ['📈 P - Productivity', '✅ Q - Quality', '💰 C - Cost', '🚚 D - Delivery', '🦺 S - Safety', '😊 M - Morale'];
+const PRIOS = { high: '🔴 ด่วนมาก', med: '🟡 ปานกลาง', low: '🟢 ทั่วไป' };
+const STATUS = {
+  todo: { label: 'รอดำเนินการ', color: '#818CF8' }, planning: { label: 'วางแผน', color: '#38BDF8' },
+  inprog: { label: 'กำลังดำเนินการ', color: '#FBBF24' }, review: { label: 'รอตรวจสอบ', color: '#A78BFA' },
+  done: { label: 'เสร็จสิ้น', color: '#34D399' }
+};
+const PALETTE = ['#6366F1', '#10B981', '#F59E0B', '#EC4899', '#14B8A6', '#8B5CF6', '#EF4444'];
+const LEVEL_NAME = { 1: 'Master Plan', 2: 'Action', 3: 'งานย่อย' };
+const THM = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+const SC = { day: { w: 26 }, week: { w: 44 }, month: { w: 110 } };
+const SEND = ['id', 'parentId', 'level', 'rev', 'name', 'dept', 'owner', 'cat', 'prio', 'color', 'planStart', 'planEnd',
+  'actualStart', 'actualEnd', 'pct', 'weight', 'status', 'order', 'note', 'lastUpdate', 'milestone', 'dependsOn'];
+
+let items = [], idx = { byId: {}, kids: {}, roots: [] }, session = null;
+const G = { scale: 'week', year: new Date().getFullYear(), dept: 'all', owner: 'all', q: '', qr: '', st: 'all', cat: 'all', collapsed: {}, needScroll: true };
+const ST_OPTS = [['all', 'ทุกสถานะ'], ['late', '🚨 เลยกำหนด'], ['stale', '⏰ ค้างอัปเดตสัปดาห์นี้'], ['inprog', 'กำลังดำเนินการ'], ['review', 'รอตรวจสอบ'], ['notstarted', 'ยังไม่เริ่ม'], ['done', 'เสร็จสิ้น']];
+const L = { start: '', dept: 'all', thr: 5, weeks: 14, sel: null };
+const W = { week: '', dept: 'all', owner: 'all', all: false, draft: {} };
+let curPage = 'gantt', weeklyDirty = false, saving = false, drag = null, suppressClick = false;
+let R = {}, lastM = {}, lastToday = '';
+let lastVer = '', SNAPS = null, snapLoading = false;
+let KPIS = [], CC = {}, loading = false, loadErr = '', UNDO = null, RO = null, lastRows = [], LROWS = [];
+
+//#PURE-START
+// ═══════════ DATE UTILS (คำนวณด้วย UTC integer ทั้งหมด — ไม่มีปัญหาโซนเวลา/เลื่อน 1 วัน) ═══════════
+const DAY = 86400000;
+const d2n = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / DAY); };
+const n2d = n => new Date(n * DAY).toISOString().slice(0, 10);
+const addDays = (s, k) => n2d(d2n(s) + k);
+const diffDays = (a, b) => d2n(b) - d2n(a);
+const isDate = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+const pad2 = n => String(n).padStart(2, '0');
+function todayStr() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+const mondayOf = s => addDays(s, -((new Date(d2n(s) * DAY).getUTCDay() + 6) % 7));
+function isoWeek(s) {
+  const n = d2n(s), dow = (new Date(n * DAY).getUTCDay() + 6) % 7, thu = n - dow + 3;
+  const y = new Date(thu * DAY).getUTCFullYear();
+  return Math.floor((thu - Math.round(Date.UTC(y, 0, 1) / DAY)) / 7) + 1;
+}
+const fmtD = s => { if (!isDate(s)) return '—'; const p = s.split('-').map(Number); return p[2] + ' ' + THM[p[1] - 1]; };
+const fmtDY = s => { if (!isDate(s)) return '—'; const p = s.split('-').map(Number); return p[2] + ' ' + THM[p[1] - 1] + ' ' + String(p[0] + 543).slice(2); };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+// ═══════════ MODEL ═══════════
+function normItem(o) {
+  const r = Object.assign({}, o);
+  ['level', 'pct', 'weight', 'order', 'rev'].forEach(k => r[k] = Number(r[k]) || 0);
+  if (!(r.weight > 0)) r.weight = 1;
+  r.locked = r.locked === true || String(r.locked).toUpperCase() === 'TRUE';
+  r.milestone = r.milestone === true || String(r.milestone).toUpperCase() === 'TRUE';
+  ['planStart', 'planEnd', 'actualStart', 'actualEnd', 'baseStart', 'baseEnd', 'lastUpdate'].forEach(k => { r[k] = isDate(r[k]) ? r[k] : ''; });
+  ['parentId', 'name', 'dept', 'owner', 'cat', 'prio', 'color', 'status', 'note', 'src', 'dependsOn', 'files'].forEach(k => r[k] = r[k] == null ? '' : String(r[k]));
+  if (!STATUS[r.status]) r.status = 'todo';
+  return r;
+}
+const cmp = (a, b) => (a.order - b.order) || String(a.planStart).localeCompare(String(b.planStart)) || String(a.id).localeCompare(String(b.id));
+function buildIndex() {
+  const byId = {}, kids = {};
+  items.forEach(o => { byId[o.id] = o; });
+  items.forEach(o => { if (o.parentId && byId[o.parentId]) (kids[o.parentId] || (kids[o.parentId] = [])).push(o); });
+  Object.keys(kids).forEach(k => kids[k].sort(cmp));
+  idx = { byId, kids, roots: items.filter(o => !o.parentId || !byId[o.parentId]).sort(cmp) };
+}
+function rootOf(o) { let c = o, g = 0; while (c.parentId && idx.byId[c.parentId] && g++ < 6) c = idx.byId[c.parentId]; return c; }
+// ค่าของ Action/Master = สรุปจากรายการย่อยเสมอ (ตรงกับฝั่งเซิร์ฟเวอร์)
+function rollup() {
+  const calc = o => {
+    const ch = idx.kids[o.id]; if (!ch) return;
+    ch.forEach(calc);
+    let sw = 0, sp = 0, ps = '', pe = '', as = '', ae = '', allDone = true, allRev = true, anyStart = false, anyPlan = false;
+    ch.forEach(c => {
+      const w = c.weight > 0 ? c.weight : 1; sw += w; sp += w * c.pct;
+      if (c.planStart && (!ps || c.planStart < ps)) ps = c.planStart;
+      if (c.planEnd && (!pe || c.planEnd > pe)) pe = c.planEnd;
+      if (c.actualStart && (!as || c.actualStart < as)) as = c.actualStart;
+      if (c.actualEnd && (!ae || c.actualEnd > ae)) ae = c.actualEnd;
+      if (c.status !== 'done') allDone = false;
+      if (c.status !== 'done' && c.status !== 'review') allRev = false;
+      if (c.pct > 0 || c.status === 'inprog' || c.status === 'review' || c.status === 'done') anyStart = true;
+      if (c.status === 'planning') anyPlan = true;
+    });
+    o.planStart = ps; o.planEnd = pe; o.actualStart = as; o.actualEnd = allDone ? ae : '';
+    o.pct = sw ? Math.round(sp / sw) : 0;
+    o.status = allDone ? 'done' : allRev ? 'review' : anyStart ? 'inprog' : anyPlan ? 'planning' : 'todo';
+  };
+  idx.roots.forEach(calc);
+}
+// % ที่ "ควรจะถึง" ณ วันนี้ ตามแผน (เส้นตรงระหว่างวันเริ่ม–วันจบ)
+function planPctLeaf(o, today) {
+  if (!isDate(o.planStart) || !isDate(o.planEnd)) return 0;
+  if (today < o.planStart) return 0;
+  if (today >= o.planEnd) return 100;
+  return Math.round((diffDays(o.planStart, today) + 1) / (diffDays(o.planStart, o.planEnd) + 1) * 100);
+}
+function metrics(today) {
+  const M = {};
+  const calc = o => {
+    const ch = idx.kids[o.id];
+    if (!ch) return (M[o.id] = { plan: planPctLeaf(o, today), act: o.pct });
+    let sw = 0, sp = 0;
+    ch.forEach(c => { const m = calc(c), w = c.weight > 0 ? c.weight : 1; sw += w; sp += w * m.plan; });
+    return (M[o.id] = { plan: sw ? Math.round(sp / sw) : 0, act: o.pct });
+  };
+  idx.roots.forEach(calc);
+  return M;
+}
+function health(o, m, today) {
+  if (!isDate(o.planStart) || !isDate(o.planEnd)) return { cls: 'gray', text: 'ไม่มีแผน' };
+  if (o.status === 'done') {
+    if (isDate(o.actualEnd) && o.actualEnd > o.planEnd) return { cls: 'warn', text: 'เสร็จช้า ' + diffDays(o.planEnd, o.actualEnd) + ' วัน' };
+    return { cls: 'ok', text: 'เสร็จตามแผน' };
+  }
+  if (today > o.planEnd) return { cls: 'bad', text: 'เลยกำหนด ' + diffDays(o.planEnd, today) + ' วัน' };
+  if (today < o.planStart) return { cls: 'gray', text: 'ยังไม่ถึงกำหนด' };
+  if (m.act < m.plan - 10) return { cls: 'warn', text: 'ช้ากว่าแผน ' + (m.plan - m.act) + '%' };
+  return { cls: 'ok', text: 'ตามแผน' };
+}
+// กติกาอัปเดตงานปลายทาง — ตรงกับ fixLeaf() ฝั่งเซิร์ฟเวอร์ (เสร็จสิ้นต้องผู้อนุมัติ)
+function applyRules(n, stamp, wasDone, admin) {
+  if (!admin && !wasDone && (n.status === 'done' || n.pct >= 100)) { n.status = 'review'; n.pct = Math.min(n.pct, 99); n._toReview = true; }
+  if (n.status === 'done') {
+    n.pct = 100; if (!n.actualEnd) n.actualEnd = stamp; if (!n.actualStart) n.actualStart = n.actualEnd;
+  } else {
+    n.actualEnd = '';
+    if (n.pct > 0 && (n.status === 'todo' || n.status === 'planning')) n.status = 'inprog';
+    if ((n.status === 'inprog' || n.pct > 0) && !n.actualStart) n.actualStart = stamp;
+  }
+}
+// ═══════════ ตัวกรองสถานะ / สถิติ / ภาระงาน / KPI (ฟังก์ชันล้วน ทดสอบแยกได้) ═══════════
+function stMatch(o, st, today) {
+  if (st === 'all') return true;
+  if (st === 'late') return o.status !== 'done' && isDate(o.planEnd) && today > o.planEnd;
+  if (st === 'stale') return o.status !== 'done' && isDate(o.planStart) && o.planStart <= today && (o.lastUpdate || '') < mondayOf(today);
+  if (st === 'notstarted') return o.status === 'todo' || o.status === 'planning';
+  return o.status === st;
+}
+function calcStats(leaves, today) {
+  let fin = 0, onTime = 0, slipSum = 0, slipN = 0, done30 = 0, reviewAll = 0;
+  const od = [], rv = [];
+  leaves.forEach(o => {
+    if (o.status === 'done') {
+      if (isDate(o.actualEnd) && isDate(o.planEnd)) { fin++; if (o.actualEnd <= o.planEnd) onTime++; else { slipSum += diffDays(o.planEnd, o.actualEnd); slipN++; } }
+      if (isDate(o.actualEnd)) { const d = diffDays(o.actualEnd, today); if (d >= 0 && d <= 30) done30++; }
+    } else {
+      if (isDate(o.planEnd) && today > o.planEnd) od.push(diffDays(o.planEnd, today));
+      if (o.status === 'review') { reviewAll++; if (isDate(o.lastUpdate)) rv.push(Math.max(0, diffDays(o.lastUpdate, today))); }
+    }
+  });
+  const avg = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
+  return { fin, onTimeRate: fin ? Math.round(onTime / fin * 100) : null, slipN, avgSlip: slipN ? slipSum / slipN : null,
+    overdueN: od.length, avgOverdue: avg(od), maxOverdue: od.length ? Math.max(...od) : null,
+    reviewAll, avgReview: avg(rv), maxReview: rv.length ? Math.max(...rv) : null, done30 };
+}
+function groupSummary(leaves, keyFn, M, today) {
+  const g = {};
+  leaves.forEach(o => {
+    const k = keyFn(o), r = g[k] || (g[k] = { k, n: 0, done: 0, late: 0, sw: 0, sp: 0, sa: 0 }), w = o.weight > 0 ? o.weight : 1;
+    r.n++; if (o.status === 'done') r.done++; else if (isDate(o.planEnd) && today > o.planEnd) r.late++;
+    r.sw += w; r.sp += w * (M[o.id] ? M[o.id].plan : 0); r.sa += w * o.pct;
+  });
+  return Object.values(g).map(r => ({ k: r.k, n: r.n, done: r.done, late: r.late, plan: r.sw ? Math.round(r.sp / r.sw) : 0, act: r.sw ? Math.round(r.sa / r.sw) : 0 }))
+    .sort((a, b) => b.late - a.late || b.n - a.n || String(a.k).localeCompare(String(b.k)));
+}
+function workloadCalc(leaves, owners, weeks, today) {
+  const UN = '(ไม่ระบุ)', rows = {};
+  const mk = n => rows[n] || (rows[n] = { owner: n, open: 0, late: [], cells: weeks.map(() => []) });
+  leaves.forEach(o => {
+    if (o.status === 'done' || !isDate(o.planStart) || !isDate(o.planEnd)) return;
+    const r = mk(o.owner || UN), end = o.planEnd < today ? today : o.planEnd; // งานเลยกำหนดที่ยังไม่ปิด = ยังเป็นภาระถึงปัจจุบัน
+    r.open++; if (o.planEnd < today) r.late.push(o);
+    weeks.forEach((ws, i) => { if (o.planStart <= addDays(ws, 6) && end >= ws) r.cells[i].push(o); });
+  });
+  const order = owners.concat([UN]);
+  return Object.values(rows).sort((a, b) => {
+    const pa = Math.max(0, ...a.cells.map(c => c.length)), pb = Math.max(0, ...b.cells.map(c => c.length));
+    return pb - pa || b.late.length - a.late.length || order.indexOf(a.owner) - order.indexOf(b.owner);
+  });
+}
+// KPI ผลลัพธ์: ความสำเร็จ % เทียบ baseline→target · "ควรถึง" = เส้นตรงตามเวลาของ Master Plan
+function kpiCalc(k, today, ps, pe) {
+  const pts = (k.points || []).filter(p => isDate(p[0]) && isFinite(p[1])).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  const b = Number(k.baseline), t = Number(k.target), lower = k.dir !== 'higher', last = pts.length ? pts[pts.length - 1] : null;
+  let ach = null, exp = null, cls = 'gray', text = 'ยังไม่มีค่าจริง';
+  if (last) { const span = lower ? b - t : t - b, prog = lower ? b - last[1] : last[1] - b; ach = span === 0 ? (prog >= 0 ? 100 : 0) : Math.round(prog / span * 100); }
+  if (isDate(ps) && isDate(pe) && pe > ps) exp = Math.round(clamp(diffDays(ps, today) / diffDays(ps, pe), 0, 1) * 100);
+  if (last) {
+    if (ach >= 100) { cls = 'ok'; text = 'ถึงเป้าแล้ว'; }
+    else if (exp == null) { cls = 'gray'; text = 'บรรลุ ' + ach + '%'; }
+    else { const gap = ach - exp; if (gap >= -5) { cls = 'ok'; text = 'ตามเป้า'; } else if (gap >= -20) { cls = 'warn'; text = 'ช้ากว่าเป้า'; } else { cls = 'bad'; text = 'ห่างเป้า'; } }
+  }
+  return { pts, last, ach, exp, cls, text, lower };
+}
+//#PURE-END
+
+// ═══════════ HELPERS ═══════════
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isAdmin = () => !!session && session.role === 'admin';
+const isLocked = o => !!rootOf(o).locked;
+const canEditPlan = o => isAdmin() || !isLocked(o);
+const colorOf = o => { const c = rootOf(o).color; return /^#[0-9a-fA-F]{6}$/.test(c) ? c : '#6366F1'; };
+const genId = () => 'I' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const yearBE = y => y + 543;
+const overlapsYear = o => !isDate(o.planStart) || !isDate(o.planEnd) || (o.planEnd >= G.year + '-01-01' && o.planStart <= G.year + '-12-31');
+function toast(msg, type, act) {
+  const t = document.createElement('div'); t.className = 'toast ' + (type || ''); const s = document.createElement('span'); s.textContent = msg; t.appendChild(s);
+  if (act) { const b = document.createElement('button'); b.className = 'btn'; b.style.cssText = 'padding:2px 10px;flex:none'; b.textContent = act.label; b.onclick = () => { t.remove(); act.fn(); }; t.appendChild(b); }
+  $('toasts').appendChild(t); setTimeout(() => t.remove(), act ? 9000 : type === 'warn' ? 6500 : 3200);
+}
+function setSync(s, detail) {
+  const m = { idle: ['⚪', 'ยังไม่เชื่อมต่อ'], busy: ['🔄', 'กำลังซิงค์…'], ok: ['🟢', 'ซิงค์แล้ว'], err: ['🔴', 'ซิงค์ล้มเหลว'] }[s];
+  $('sync').textContent = m[0] + ' ' + m[1]; $('sync').title = detail || 'คลิกเพื่อโหลดข้อมูลล่าสุด';
+}
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } },
+  sget(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+  sset(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { } },
+  sdel(k) { try { sessionStorage.removeItem(k); } catch (e) { } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) { } }
+};
+const apiUrl = () => store.get('pf2_api') || API_URL_DEFAULT;
+const READS = ['getAll', 'getVersion', 'getSnapshots', 'getLog', 'getComments'];
+function friendlyErr(e) {
+  const m = String((e && e.message) || e), c = e && e.code;
+  if (c === 'AUTH') return m;
+  if (c === 'NET') return 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ — ตรวจอินเทอร์เน็ตแล้วกดที่ป้ายซิงค์เพื่อลองใหม่ (ร่างที่กรอกไว้ยังอยู่ในเครื่อง)';
+  if (c === 'TIMEOUT') return 'เซิร์ฟเวอร์ตอบช้าเกินไป — กดป้ายซิงค์เพื่อโหลดข้อมูลล่าสุดก่อน แล้วค่อยบันทึกซ้ำ (รายการที่เพิ่งกดอาจเข้าไปแล้ว)';
+  if (c === 'BADRESP') return 'เซิร์ฟเวอร์ตอบกลับผิดรูปแบบ — มักเกิดจากยังไม่ได้ Deploy Apps Script เวอร์ชันล่าสุด หรือสิทธิ์ Web App ไม่ใช่ "Anyone"';
+  if (c === 'BAD_ACTION') return 'Apps Script ยังเป็นเวอร์ชันเก่า — วาง Code.gs ใหม่แล้ว Deploy → New version';
+  if (c === 'FORBIDDEN') return 'ไม่มีสิทธิ์ทำรายการนี้ (ต้องเข้าด้วยสิทธิ์ Admin)';
+  if (/lock/i.test(m) && /timeout|obtain/i.test(m)) return 'ระบบกำลังประมวลผลคำขอของผู้อื่นอยู่ — รอสักครู่แล้วลองใหม่';
+  return m;
+}
+async function api(action, payload) {
+  const body = JSON.stringify(Object.assign({ action, token: session && session.token }, payload || {}));
+  const once = async () => {
+    const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), action === 'uploadFile' ? 120000 : 45000);
+    let res;
+    try { res = await fetch(apiUrl(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body, signal: ctl.signal }); } // text/plain เลี่ยง CORS preflight ของ Apps Script
+    catch (e) { const er = new Error('network'); er.code = e && e.name === 'AbortError' ? 'TIMEOUT' : 'NET'; throw er; }
+    finally { clearTimeout(tm); }
+    let j; try { j = await res.json(); } catch (e) { const er = new Error('badresp'); er.code = 'BADRESP'; throw er; }
+    if (!j.success) { const er = new Error(j.error || 'เกิดข้อผิดพลาด'); er.code = j.code; throw er; }
+    return j.data;
+  };
+  let data;
+  try { data = await once(); }
+  catch (e) { // อ่านข้อมูลล้มเหลวจากเน็ต → ลองอีกครั้งเดียว (การเขียนไม่ retry เพื่อกันบันทึกซ้ำ)
+    if (READS.includes(action) && (e.code === 'NET' || e.code === 'TIMEOUT')) { await new Promise(r => setTimeout(r, 1200)); data = await once(); } else throw e;
+  }
+  if (data && data.ver && data.items) lastVer = data.ver; // จำเวอร์ชันของข้อมูลชุดเต็มล่าสุดที่ได้รับ
+  ingest(data);
+  return data;
+}
+function handleErr(e) {
+  const m = friendlyErr(e);
+  if (e.code === 'AUTH') { logout(m); return; }
+  setSync('err', m); toast('⚠️ ' + m, 'warn');
+}
+
+// ═══════════ LOGIN / SESSION ═══════════
+function initLogin() {
+  const rr = store.get('pf2_role');
+  if (rr === 'admin' || rr === 'user') { const el = document.querySelector('input[name=lgRole][value=' + rr + ']'); if (el) el.checked = true; }
+  $('lgUrl').value = store.get('pf2_api') || '';
+  $('lgUrlBox').hidden = !!apiUrl();
+  $('lgPw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  const saved = store.sget('pf2_s');
+  if (saved && apiUrl()) { try { session = JSON.parse(saved); enterApp(true); } catch (e) { session = null; } }
+}
+function lgErr(m) { const b = $('lgErr'); b.textContent = m; b.style.display = m ? 'block' : 'none'; }
+async function doLogin() {
+  const url = $('lgUrl').value.trim(); if (url) store.set('pf2_api', url);
+  if (!apiUrl()) { $('lgUrlBox').hidden = false; lgErr('กรุณาวาง URL ของ Apps Script Web App'); return; }
+  const pw = $('lgPw').value; if (!pw) return;
+  $('lgBtn').disabled = true; lgErr('');
+  try {
+    const role = (document.querySelector('input[name=lgRole]:checked') || {}).value === 'admin' ? 'admin' : 'user';
+    const r = await api('login', { password: pw, role });
+    store.set('pf2_role', role);
+    session = { token: r.token, role: r.role, name: '' };
+    store.sset('pf2_s', JSON.stringify(session));
+    $('lgPw').value = '';
+    await enterApp(false);
+  } catch (e) { lgErr(e.message === 'BAD_PASSWORD' ? 'รหัสผ่านไม่ถูกต้อง' : friendlyErr(e)); }
+  finally { $('lgBtn').disabled = false; }
+}
+async function enterApp(restoring) {
+  $('login').hidden = true; $('app').hidden = false;
+  const adm = isAdmin();
+  $('tabAdmin').hidden = !adm; $('tabReview').hidden = !adm; $('btnCopyYear').hidden = !adm;
+  const rb = $('roleBadge');
+  rb.textContent = adm ? '⭐ Admin · ผู้อนุมัติ' : '👤 User · ผู้ใช้งาน';
+  rb.style.background = adm ? 'rgba(16,185,129,.14)' : 'rgba(99,102,241,.12)'; rb.style.color = adm ? '#047857' : '#4F46E5';
+  fillLists(); refreshViews('');
+  W.week = mondayOf(todayStr());
+  G.needScroll = true;
+  loadDraft(); SNAPS = null;
+  loading = true; loadErr = ''; renderCurrent();
+  const ok = await reload(false);
+  if (!ok) return; // ผิดพลาดชั่วคราว (เน็ต) → คง session ไว้ให้กดลองใหม่ · ถ้า token หมดอายุ handleErr จะพากลับหน้า login เอง
+  const nd = Object.keys(W.draft).length;
+  if (ok && nd) toast('กู้คืนร่างอัปเดตรายสัปดาห์ที่ยังไม่ได้บันทึก ' + nd + ' รายการ — ไปที่แท็บ "อัปเดตรายสัปดาห์" เพื่อบันทึก', 'warn');
+}
+function logout(msg) {
+  session = null; store.sdel('pf2_s'); items = []; buildIndex(); lastVer = ''; SNAPS = null; W.draft = {}; KPIS = []; CC = {}; UNDO = null; loading = false; loadErr = '';
+  $('app').hidden = true; $('login').hidden = false; lgErr(msg || '');
+  $('lgUrlBox').hidden = !!apiUrl();
+}
+async function reload(manual) {
+  setSync('busy');
+  try {
+    const r = await api('getAll');
+    loading = false; loadErr = '';
+    applyItems(r.items, r.hist, r.notices); setSync('ok', 'อัปเดตล่าสุด ' + new Date().toLocaleTimeString('th-TH'));
+    if (manual) toast('โหลดข้อมูลล่าสุดแล้ว', 'ok');
+    return true;
+  } catch (e) {
+    loading = false; if (!items.length) loadErr = friendlyErr(e);
+    handleErr(e); if (session && !items.length) renderCurrent();
+    return false;
+  }
+}
+let HIST = {}, NOTICES = [];
+function applyItems(list, hist, notices) {
+  if (hist) HIST = hist;
+  if (notices) applyNotices(notices);
+  items = list.map(normItem); buildIndex(); rollup(); updReviewBdg(); renderCurrent();
+}
+
+// ═══════════ SAVE ═══════════
+// ระหว่างบันทึกจะล็อกหน้าจอสั้นๆ (กันแก้ซ้อนกัน) แล้วใช้ข้อมูลที่เซิร์ฟเวอร์ส่งกลับเป็นต้นฉบับเสมอ
+async function persist(changed, log) {
+  saving = true; $('saving').classList.add('on'); setSync('busy');
+  try {
+    const payload = changed.map(o => { const r = {}; SEND.forEach(k => { r[k] = o[k]; }); return r; });
+    const res = await api('upsertItems', { items: payload, log: log || [] });
+    applyItems(res.items, res.hist, res.notices); setSync('ok', 'บันทึกแล้ว ' + new Date().toLocaleTimeString('th-TH'));
+    if (res.conflicts && res.conflicts.length) toast('มีผู้อื่นแก้รายการเดียวกันไปก่อน จึงไม่ได้บันทึก ' + res.conflicts.length + ' รายการ — โหลดข้อมูลล่าสุดให้แล้ว', 'warn');
+    if (res.denied && res.denied.length) toast('บางรายการไม่ได้รับอนุญาต (Plan ถูกล็อก)', 'warn');
+    return res;
+  } catch (e) { handleErr(e); await reload(false); return null; }
+  finally { saving = false; $('saving').classList.remove('on'); }
+}
+async function callAndApply(action, payload, okMsg) {
+  saving = true; $('saving').classList.add('on'); setSync('busy');
+  try {
+    const res = await api(action, payload);
+    if (res.items) applyItems(res.items, res.hist, res.notices); else if (res.notices) applyNotices(res.notices); else renderCurrent();
+    setSync('ok'); if (okMsg) toast(okMsg, 'ok');
+    return res;
+  } catch (e) { handleErr(e); return null; }
+  finally { saving = false; $('saving').classList.remove('on'); }
+}
+
+// ═══════════ NOTICES (ประกาศ) ═══════════
+const NTYPE = { important: { ic: '🚨', label: 'สำคัญ', c: '#EF4444' }, update: { ic: '🔄', label: 'อัปเดต', c: '#6366F1' }, info: { ic: 'ℹ️', label: 'ทั่วไป', c: '#0EA5E9' }, reminder: { ic: '⏰', label: 'เตือน', c: '#F59E0B' } };
+let seenSet = null, nFilter = 'all';
+function loadSeen() {
+  if (seenSet) return seenSet;
+  const raw = store.get('pf2_seen');
+  seenSet = new Set(raw ? (() => { try { return JSON.parse(raw); } catch (e) { return []; } })() : []);
+  seenSet._fresh = raw === null;
+  return seenSet;
+}
+function saveSeen() { store.set('pf2_seen', JSON.stringify([...seenSet].slice(-400))); }
+function isUnread(n) { return !loadSeen().has(n.id); }
+function applyNotices(list) {
+  NOTICES = list || [];
+  const ss = loadSeen();
+  if (ss._fresh) { NOTICES.forEach(n => ss.add(n.id)); ss._fresh = false; saveSeen(); } // ครั้งแรก: ไม่ให้ประกาศเก่าท่วมเป็น "ใหม่"
+  updNoticeBadge();
+  if (curPage === 'notice') renderNotices();
+}
+function updNoticeBadge() {
+  const c = NOTICES.filter(isUnread).length, b = $('noticeBdg');
+  if (b) { b.textContent = c > 99 ? '99+' : c; b.hidden = !c; }
+}
+function markAllSeen(silent) {
+  const ss = loadSeen(); NOTICES.forEach(n => ss.add(n.id)); saveSeen(); updNoticeBadge();
+  if (!silent) renderNotices();
+}
+function canEditNotice(n) { return isAdmin() || (!!session && !!session.name && n.author === session.name); }
+function fmtDT(iso) { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }); }
+function renderNotices() {
+  $('noticeFilters').innerHTML = [['all', 'ทั้งหมด']].concat(Object.keys(NTYPE).map(k => [k, NTYPE[k].ic + ' ' + NTYPE[k].label]))
+    .map(([k, l]) => `<button class="fchip${nFilter === k ? ' on' : ''}" onclick="nFilter='${k}';renderNotices()">${l}</button>`).join('');
+  const list = NOTICES.filter(n => nFilter === 'all' || n.type === nFilter);
+  $('noticeBody').innerHTML = list.length ? list.map(n => {
+    const t = NTYPE[n.type] || NTYPE.info, un = isUnread(n);
+    return `<div class="nt${un ? ' unread' : ''}" style="--nc:${t.c}" data-nid="${esc(n.id)}">
+      <h4><span>${t.ic}</span>${n.pinned ? '<span title="ปักหมุด">📌</span>' : ''}<span>${esc(n.title)}</span>${un ? '<span class="new">ใหม่</span>' : ''}</h4>
+      ${n.body ? `<div class="bd">${esc(n.body)}</div>` : ''}
+      <div class="mt"><span>${t.label}</span><span>👤 ${esc(n.author) || '—'}</span><span>${fmtDT(n.createdAt)}</span>
+        ${canEditNotice(n) ? `<span style="margin-left:auto;display:flex;gap:6px"><button class="btn" onclick="openNotice('${esc(n.id)}')">✎ แก้ไข</button><button class="btn danger" onclick="askDelNotice('${esc(n.id)}')">🗑</button></span>` : ''}</div></div>`;
+  }).join('') : '<div class="empty">ยังไม่มีประกาศ</div>';
+}
+function openNotice(id) {
+  const ex = id ? NOTICES.find(n => n.id === id) : null;
+  const o = ex || { type: 'info', title: '', body: '', pinned: false };
+  $('modalNotice').innerHTML = `<h2>📣 ${ex ? 'แก้ไขประกาศ' : 'ประกาศใหม่'}</h2>
+    <div class="fld"><label class="fl">ประเภท</label><select class="in" id="n_type">${Object.keys(NTYPE).map(k => opt(k, NTYPE[k].ic + ' ' + NTYPE[k].label, o.type)).join('')}</select></div>
+    <div class="fld"><label class="fl">หัวข้อ</label><input class="in" id="n_title" maxlength="120" value="${esc(o.title)}"></div>
+    <div class="fld"><label class="fl">รายละเอียด</label><textarea class="in" id="n_body" rows="6" maxlength="3000" style="resize:vertical">${esc(o.body)}</textarea></div>
+    ${isAdmin() ? `<label class="chk"><input type="checkbox" id="n_pin" ${o.pinned ? 'checked' : ''}> 📌 ปักหมุดไว้บนสุด</label>` : ''}
+    <div class="foot" style="justify-content:flex-end"><button class="btn" onclick="$('ovNotice').classList.remove('on')">ยกเลิก</button><button class="btn pri" id="n_save">📣 ${ex ? 'บันทึก' : 'เผยแพร่'}</button></div>`;
+  $('ovNotice').classList.add('on');
+  $('n_save').onclick = async () => {
+    const title = $('n_title').value.trim(); if (!title) { toast('กรุณากรอกหัวข้อประกาศ', 'warn'); return; }
+    $('ovNotice').classList.remove('on');
+    const had = new Set(NOTICES.map(x => x.id));
+    const r = await callAndApply('upsertNotice', { notice: { id: ex ? ex.id : '', type: $('n_type').value, title, body: $('n_body').value, pinned: $('n_pin') ? $('n_pin').checked : false } }, ex ? 'บันทึกประกาศแล้ว' : 'เผยแพร่ประกาศแล้ว');
+    if (r) {
+      if (r.notices) applyNotices(r.notices);
+      const ss = loadSeen(); NOTICES.forEach(x => { if (!had.has(x.id)) ss.add(x.id); }); saveSeen(); updNoticeBadge(); // ประกาศที่เราโพสต์เอง ไม่นับเป็น "ใหม่"
+      if (curPage === 'notice') renderNotices();
+    }
+  };
+}
+function askDelNotice(id) {
+  const n = NOTICES.find(x => x.id === id); if (!n) return;
+  openConfirm('ลบประกาศ', 'ลบประกาศ <b>' + esc(n.title) + '</b> ?', '🗑 ลบ', async () => { const r = await callAndApply('deleteNotice', { id }, 'ลบประกาศแล้ว'); if (r && r.notices) applyNotices(r.notices); });
+}
+
+// ═══════════ NAV ═══════════
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.page); });
+function go(p) {
+  if (curPage === 'notice' && p !== 'notice') markAllSeen(true);
+  curPage = p;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.page === p));
+  document.querySelectorAll('.page').forEach(s => s.classList.toggle('on', s.id === 'pg-' + p));
+  renderCurrent();
+  if (p === 'dash') ensureSnaps(true);
+}
+const ROWH = 48;
+function planX(o) {
+  if (o.milestone && !(idx.kids[o.id] || []).length) { const c = (xOf(o.planEnd) + xOf(addDays(o.planEnd, 1))) / 2; return [c - 7, c + 7]; }
+  return [xOf(o.planStart), xOf(addDays(o.planEnd, 1))];
+}
+function depSvg(rows) {
+  const pos = {}; rows.forEach((o, i) => { pos[o.id] = i; });
+  let paths = '';
+  rows.forEach((o, j) => {
+    if (!o.dependsOn || !isDate(o.planStart)) return;
+    o.dependsOn.split(',').forEach(pid => {
+      const p = idx.byId[pid]; if (!p || pos[pid] === undefined || !isDate(p.planEnd)) return;
+      const i = pos[pid], [, x2] = planX(p), [x1] = planX(o), y1 = i * ROWH + 15, y2 = j * ROWH + 15;
+      const bad = o.planStart <= p.planEnd, col = bad ? '#EF4444' : '#64748B';
+      let d;
+      if (x1 >= x2 + 14) { const xm = x2 + 7; d = `M${x2},${y1} H${xm} V${y2} H${x1 - 1}`; }
+      else { const ym = y2 > y1 ? (i + 1) * ROWH - 2 : i * ROWH + 2; d = `M${x2},${y1} H${x2 + 7} V${ym} H${x1 - 8} V${y2} H${x1 - 1}`; }
+      paths += `<path d="${d}" fill="none" stroke="${col}" stroke-width="1.4" marker-end="url(#${bad ? 'arB' : 'arG'})"/>`;
+    });
+  });
+  if (!paths) return '';
+  return `<svg class="g-dep" width="${R.W}" height="${rows.length * ROWH}"><defs><marker id="arG" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#64748B"/></marker><marker id="arB" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#EF4444"/></marker></defs>${paths}</svg>`;
+}
+function renderCurrent() {
+  if (!session) return;
+  if (loading && !items.length) { skeleton(); return; }
+  if (curPage === 'gantt') renderGantt(); else if (curPage === 'weekly') renderWeekly();
+  else if (curPage === 'dash') renderDash();
+  else if (curPage === 'notice') renderNotices();
+  else if (curPage === 'review') renderReview();
+  else if (curPage === 'load') renderLoad();
+  else if (curPage === 'admin') renderAdmin(false);
+}
+
+// ═══════════ GANTT ═══════════
+function getRange() {
+  const y = G.year; let rs = y + '-01-01', re = y + '-12-31';
+  if (G.scale === 'week') { rs = mondayOf(rs); re = addDays(mondayOf(re), 6); }
+  const days = diffDays(rs, re) + 1, w = SC[G.scale].w;
+  const Wd = G.scale === 'day' ? days * w : G.scale === 'week' ? days / 7 * w : 12 * w;
+  return { rs, re, days, W: Wd, w };
+}
+function xOf(s) {
+  const w = R.w;
+  if (G.scale === 'day') return diffDays(R.rs, s) * w;
+  if (G.scale === 'week') return diffDays(R.rs, s) / 7 * w;
+  const p = s.split('-').map(Number), q = R.rs.split('-').map(Number);
+  const dim = new Date(Date.UTC(p[0], p[1], 0)).getUTCDate();
+  return ((p[0] - q[0]) * 12 + (p[1] - q[1])) * w + (p[2] - 1) / dim * w;
+}
+const pxToDays = dx => G.scale === 'day' ? Math.round(dx / R.w) : G.scale === 'week' ? Math.round(dx / R.w * 7) : Math.round(dx / R.w * 30.44);
+
+function pred(o) {
+  if (G.dept !== 'all' && o.dept !== G.dept) return false;
+  if (G.owner !== 'all' && o.owner !== G.owner) return false;
+  if (G.cat !== 'all' && o.cat !== G.cat) return false;
+  if (G.q && !(o.name + ' ' + o.owner + ' ' + o.note + ' ' + o.dept).toLowerCase().includes(G.q)) return false;
+  if (G.st !== 'all') { // ตัวกรองสถานะดูที่งานปลายทางเท่านั้น (Master/Action ปรากฏเพราะมีงานย่อยที่ตรง)
+    if ((idx.kids[o.id] || []).length) return false;
+    if (!stMatch(o, G.st, lastToday || todayStr())) return false;
+  }
+  return true;
+}
+function subtreeMatch(o) { return pred(o) || (idx.kids[o.id] || []).some(subtreeMatch); }
+function flatRows() {
+  const rows = [];
+  const walk = o => { if (!subtreeMatch(o)) return; rows.push(o); if (!G.collapsed[o.id]) (idx.kids[o.id] || []).forEach(walk); };
+  idx.roots.filter(overlapsYear).forEach(walk);
+  return rows;
+}
+function renderGantt() {
+  const today = todayStr(); lastToday = today; R = getRange(); segMemo = {};
+  $('yearLbl').textContent = 'ปี ' + yearBE(G.year);
+  document.querySelectorAll('[data-scale]').forEach(b => b.classList.toggle('on', b.dataset.scale === G.scale));
+  const sc = $('gScroll'), w = R.w;
+  let gi, gs, gp;
+  const line = 'repeating-linear-gradient(90deg,transparent 0,transparent ' + (w - 1) + 'px,rgba(99,102,241,.1) ' + (w - 1) + 'px,rgba(99,102,241,.1) ' + w + 'px)';
+  if (G.scale === 'day') {
+    const d0 = (new Date(d2n(R.rs) * DAY).getUTCDay() + 6) % 7;
+    gi = line + ',linear-gradient(90deg,transparent 0,transparent ' + (5 * w) + 'px,rgba(99,102,241,.06) ' + (5 * w) + 'px,rgba(99,102,241,.06) ' + (7 * w) + 'px)';
+    gs = 'auto,' + (7 * w) + 'px 100%'; gp = '0 0,' + (-d0 * w) + 'px 0';
+  } else { gi = line; gs = 'auto'; gp = '0 0'; }
+  sc.style.setProperty('--gi', gi); sc.style.setProperty('--gs', gs); sc.style.setProperty('--gp', gp);
+
+  const rows = flatRows(); lastRows = rows; const M = metrics(today); lastM = M; updFilterUI(rows.length);
+  let html = headHtml(today) + '<div class="g-body">';
+  if (!rows.length) {
+    html += (loadErr && !items.length) ? errHtml()
+      : (filtersActive() && items.length) ? '<div class="empty">ไม่พบรายการตามตัวกรอง — <a href="#" onclick="clearFilters();return false">ล้างตัวกรอง</a></div>'
+        : '<div class="empty">ยังไม่มี Master Plan ในปี ' + yearBE(G.year) + ' — กดปุ่ม <b>＋ Master Plan</b> เพื่อเริ่มวางแผน</div>';
+  } else {
+    if (today >= R.rs && today <= R.re) {
+      const tx = xOf(today) + (G.scale === 'day' ? R.w / 2 : 0);
+      html += '<div class="today-line" style="left:calc(var(--lw) + ' + tx + 'px)"></div>';
+    }
+    html += depSvg(rows) + rows.map(o => rowHtml(o, M, today)).join('');
+  }
+  html += '</div>';
+  $('gInner').innerHTML = html;
+  if (G.needScroll) { G.needScroll = false; scrollToToday(); }
+}
+function headHtml(today) {
+  const w = R.w, y = G.year; let top = '', bot = '';
+  if (G.scale === 'month') {
+    for (let q = 0; q < 4; q++) top += `<div class="hc top" style="left:${q * 3 * w}px;width:${3 * w}px">ไตรมาส ${q + 1} · ${yearBE(y)}</div>`;
+    const cm = today.slice(0, 4) === String(y) ? +today.slice(5, 7) - 1 : -1;
+    for (let m = 0; m < 12; m++) bot += `<div class="hc${m === cm ? ' cur' : ''}" style="left:${m * w}px;width:${w}px">${THM[m]}</div>`;
+  } else {
+    for (let m = 0; m < 12; m++) {
+      const a = Math.max(0, xOf(y + '-' + pad2(m + 1) + '-01'));
+      const b = m === 11 ? R.W : Math.min(R.W, xOf(y + '-' + pad2(m + 2) + '-01'));
+      top += `<div class="hc top" style="left:${a}px;width:${Math.max(0, b - a)}px">${THM[m]} ${yearBE(y)}</div>`;
+    }
+    if (G.scale === 'day') {
+      for (let i = 0; i < R.days; i++) { const ds = addDays(R.rs, i); bot += `<div class="hc${ds === today ? ' cur' : ''}" style="left:${i * w}px;width:${w}px">${+ds.slice(8)}</div>`; }
+    } else {
+      for (let i = 0; i < R.days / 7; i++) {
+        const ds = addDays(R.rs, i * 7);
+        bot += `<div class="hc${today >= ds && today <= addDays(ds, 6) ? ' cur' : ''}" style="left:${i * w}px;width:${w}px" title="${fmtD(ds)}">W${isoWeek(ds)}</div>`;
+      }
+    }
+  }
+  return `<div class="g-head"><div class="g-hl"><div>Master Plan / Action / งานย่อย</div><div class="hide-md">ผู้รับผิดชอบ</div><div class="hide-sm">Plan</div><div class="hide-sm" style="text-align:center">Plan%</div><div class="hide-sm" style="text-align:center">Act%</div><div>สถานะ</div></div><div class="g-hd" style="width:${R.W}px">${top}${bot}</div></div>`;
+}
+function rowHtml(o, M, today) {
+  const kids = idx.kids[o.id] || [], m = M[o.id], h = health(o, m, today), c = colorOf(o), col = G.collapsed[o.id];
+  const canAdd = o.level < 3 && (isAdmin() || !isLocked(o));
+  const sibN = o.parentId && idx.byId[o.parentId] ? (idx.kids[o.parentId] || []).length : idx.roots.length;
+  const dh = (sibN > 1 && canEditPlan(o)) ? '<span class="dh" title="ลากเพื่อจัดลำดับ">⋮⋮</span>' : '';
+  const acts = (canAdd ? `<b class="ab add" data-add="${esc(o.id)}" title="เพิ่ม${LEVEL_NAME[o.level + 1]}">＋</b>` : '') +
+    (isAdmin() ? `<b class="ab del" data-del="${esc(o.id)}" title="ลบ">✕</b>` : '');
+  return `<div class="g-row lv${o.level}" data-id="${esc(o.id)}"><div class="g-left">
+    <div class="c-name" style="padding-left:${6 + (o.level - 1) * 16}px">${dh}<span class="tog" data-tog="${esc(o.id)}">${kids.length ? (col ? '＋' : '－') : ''}</span><i class="dot" style="background:${c}"></i><span class="nm" title="${esc(o.name)}">${esc(o.name)}</span>${o.level === 1 && o.locked ? '<span title="Plan ถูกล็อกแล้ว">🔒</span>' : ''}${CC[o.id] ? `<span class="cc" title="${CC[o.id]} ความเห็น">💬${CC[o.id]}</span>` : ''}<span class="acts">${acts}</span></div>
+    <div class="hide-md">${esc(o.owner) || '—'}</div>
+    <div class="c-plan hide-sm">${isDate(o.planStart) ? fmtD(o.planStart) + ' – ' + fmtD(o.planEnd) : '—'}</div>
+    <div class="c-pct hide-sm">${m.plan}%</div>
+    <div class="c-pct hide-sm${m.act < m.plan - 10 ? ' low' : ''}">${m.act}%</div>
+    <div>${stIcon(o, h)}<span class="chip ${h.cls}" title="${esc(h.text)}">${esc(h.text)}</span></div>
+  </div><div class="g-track" style="width:${R.W}px">${barsHtml(o, today, c, kids.length === 0, h)}</div></div>`;
+}
+function stIcon(o, h) {
+  if (o.status === 'done') return '<b class="si ok">✓</b>';
+  if (h.cls === 'bad' || h.cls === 'warn') return '<b class="si bad">!</b>';
+  if (o.status === 'inprog' || o.status === 'review') return '<b class="si run">↗</b>';
+  return '<b class="si idle">○</b>';
+}
+// แตกช่วงสถานะของงานปลายทางจากประวัติ (HIST) — ไม่มีประวัติ = ช่วงเดียวด้วยสถานะปัจจุบัน
+let segMemo = {};
+const leafAE = (o, today) => (o.status === 'done' && isDate(o.actualEnd)) ? o.actualEnd : (today > o.actualStart ? today : o.actualStart);
+function leafSegs(o, today) {
+  if (segMemo[o.id]) return segMemo[o.id];
+  if (!isDate(o.actualStart)) return (segMemo[o.id] = []);
+  return (segMemo[o.id] = statusSegs(o, true, leafAE(o, today)));
+}
+function statusSegs(o, leaf, aE, today) {
+  if (!leaf) return parentSegs(o, aE, today || lastToday);
+  const as = o.actualStart, one = [{ s: as, e: aE, st: o.status }];
+  const h = HIST[o.id];
+  if (!h || !h.length) return one;
+  const pts = [];
+  h.forEach(p => { if (STATUS[p[1]]) pts.push({ d: p[0] < as ? as : p[0], st: p[1] }); });
+  if (!pts.length) return one;
+  pts.sort((x, y) => x.d < y.d ? -1 : x.d > y.d ? 1 : 0);
+  if (pts[pts.length - 1].st !== o.status) pts.push({ d: aE, st: o.status }); // ประวัติยังไม่ทัน (เช่น ข้อมูลที่ย้ายมา)
+  const ded = [];
+  pts.forEach(p => { const l = ded[ded.length - 1]; if (l && l.d === p.d) l.st = p.st; else if (!l || l.st !== p.st) ded.push({ d: p.d, st: p.st }); });
+  if (ded[0].d > as) ded.unshift({ d: as, st: ded[0].st === 'todo' || ded[0].st === 'planning' ? ded[0].st : 'inprog' });
+  const segs = [];
+  ded.forEach((p, i) => {
+    const s0 = p.d > aE ? aE : p.d;
+    let e0 = i + 1 < ded.length ? addDays(ded[i + 1].d, -1) : aE;
+    if (e0 < s0) e0 = s0;
+    segs.push({ s: s0, e: e0, st: p.st });
+  });
+  return segs;
+}
+// Master / Action: รวมสถานะของงานย่อยทุกตัวในแต่ละช่วงเวลา (ใช้กติกาเดียวกับ rollup)
+function parentSegs(o, aE, today) {
+  const leaves = []; const walk = x => { const ch = idx.kids[x.id]; if (ch) ch.forEach(walk); else leaves.push(x); }; walk(o);
+  const info = leaves.map(l => ({ l, segs: leafSegs(l, today) }));
+  const bps = new Set([o.actualStart]);
+  info.forEach(i => i.segs.forEach(sg => { if (sg.s > o.actualStart && sg.s <= aE) bps.add(sg.s); }));
+  const days = [...bps].sort();
+  const stAt = (i, d) => {
+    if (!i.segs.length) return i.l.status === 'planning' ? 'planning' : 'todo';
+    if (d < i.segs[0].s) return 'todo';
+    for (const sg of i.segs) if (d >= sg.s && d <= sg.e) return sg.st;
+    return i.segs[i.segs.length - 1].st;
+  };
+  const out = [];
+  days.forEach((d, k) => {
+    let allDone = true, allRev = true, anyStart = false, anyPlan = false;
+    info.forEach(i => {
+      const st = stAt(i, d);
+      if (st !== 'done') allDone = false;
+      if (st !== 'done' && st !== 'review') allRev = false;
+      if (st === 'inprog' || st === 'review' || st === 'done') anyStart = true;
+      if (st === 'planning') anyPlan = true;
+    });
+    const st = allDone ? 'done' : allRev ? 'review' : anyStart ? 'inprog' : anyPlan ? 'planning' : 'todo';
+    const e = k + 1 < days.length ? addDays(days[k + 1], -1) : aE;
+    const l = out[out.length - 1];
+    if (l && l.st === st) l.e = e; else out.push({ s: d, e: e < d ? d : e, st });
+  });
+  return out.length ? out : [{ s: o.actualStart, e: aE, st: o.status }];
+}
+const PLAN_CLR = { parent: '#334155', leaf: '#94A3B8' };
+function barsHtml(o, today, c, leaf, h) {
+  let out = '';
+  const clip = (a, b) => { const x1 = Math.max(0, xOf(a)), x2 = Math.min(R.W, xOf(addDays(b, 1))); return x2 - x1 > 0 ? [x1, x2 - x1] : null; };
+  const canDrag = leaf && canEditPlan(o), hasPlan = isDate(o.planStart) && isDate(o.planEnd), pe = hasPlan ? o.planEnd : null;
+  if (o.milestone && leaf && hasPlan) {
+    const cx = (xOf(o.planEnd) + xOf(addDays(o.planEnd, 1))) / 2;
+    let h2 = `<div class="ms plan" data-bar="plan" style="left:${cx - 7}px"></div><span class="ms-l" style="left:${cx + 12}px">${esc(o.name)}</span>`;
+    if (o.status === 'done' && isDate(o.actualEnd)) {
+      const ax = (xOf(o.actualEnd) + xOf(addDays(o.actualEnd, 1))) / 2;
+      if (ax > cx + 1) h2 += `<div class="ms-link" style="left:${cx}px;width:${ax - cx}px"></div>`;
+      h2 += `<div class="ms act" data-bar="act" style="left:${ax - 7}px;background:${o.actualEnd > o.planEnd ? '#EF4444' : '#22A559'}"></div>`;
+    } else if (today > o.planEnd) {
+      h2 += `<div class="ms wait" data-bar="act" style="left:${cx - 7}px"></div>`;
+    } else if (o.status === 'review') {
+      h2 += `<div class="ms act" data-bar="act" style="left:${cx - 7}px;background:${STATUS.review.color}"></div>`;
+    }
+    return h2;
+  }
+  // แท่งบน = PLAN (Master/Action สีหนึ่ง · งานย่อยอีกสี)
+  if (hasPlan) {
+    const p = clip(o.planStart, o.planEnd), pc = o.level === 3 ? PLAN_CLR.leaf : PLAN_CLR.parent;
+    if (p) out += `<div class="bar plan${canDrag ? ' drag' : ''}" data-bar="plan" style="left:${p[0]}px;width:${p[1]}px;background:${pc}">${p[1] > 70 ? '<span>' + fmtD(o.planStart) + ' – ' + fmtD(o.planEnd) + '</span>' : ''}${canDrag ? '<i class="h l" data-h="l"></i><i class="h r" data-h="r"></i>' : ''}</div>`;
+  }
+  // แท่งล่าง = ACTUAL เรียงต่อกันเป็นช่วงสถานะ: วันเริ่มจริง → วันเสร็จจริง (หรือวันนี้) · แต่ละช่วงสีตามสถานะ ณ ช่วงนั้น
+  if (isDate(o.actualStart)) {
+    const aE = (o.status === 'done' && isDate(o.actualEnd)) ? o.actualEnd : (today > o.actualStart ? today : o.actualStart);
+    const segs = statusSegs(o, leaf, aE, today);
+    segs.forEach((sg, i) => {
+      const a = clip(sg.s, sg.e); if (!a) return;
+      const last = i === segs.length - 1;
+      out += `<div class="bar act seg" data-bar="act" data-seg="${esc(sg.st + '|' + sg.s + '|' + sg.e)}" style="left:${a[0]}px;width:${a[1]}px;background:${STATUS[sg.st].color}">${last && a[1] > 34 ? '<span>' + o.pct + '%</span>' : ''}</div>`;
+    });
+    // Delay: ส่วนที่เลยวันสิ้นสุด Plan ทับด้วยลายแดง
+    if (pe && aE > pe) {
+      const r = clip(o.actualStart > pe ? o.actualStart : addDays(pe, 1), aE);
+      if (r) out += `<div class="bar act over" style="left:${r[0]}px;width:${r[1]}px"></div>`;
+    }
+  } else if (o.status !== 'done' && hasPlan && today > o.planStart) {
+    const wb = clip(o.planStart, today > o.planEnd ? o.planEnd : today);
+    if (wb) out += `<div class="bar wait" data-bar="act" style="left:${wb[0]}px;width:${wb[1]}px">${wb[1] > 70 ? 'ยังไม่เริ่ม' : ''}</div>`;
+  }
+  return out;
+}
+function scrollToToday() {
+  const sc = $('gScroll'); if (!R.rs) return;
+  const t = todayStr(), lw = (sc.querySelector('.g-left') || { offsetWidth: 0 }).offsetWidth;
+  sc.scrollLeft = (t >= R.rs && t <= R.re) ? Math.max(0, xOf(t) - (sc.clientWidth - lw) / 2) : 0;
+}
+function setScale(s) { G.scale = s; G.needScroll = true; renderGantt(); }
+function shiftYear(k) { G.year += k; G.needScroll = true; renderGantt(); }
+function setCollapse(v) { idx.roots.forEach(function f(o) { G.collapsed[o.id] = v; (idx.kids[o.id] || []).forEach(f); }); if (v) idx.roots.forEach(o => { G.collapsed[o.id] = true; }); renderGantt(); }
+
+// events (delegated)
+$('gInner').addEventListener('click', e => {
+  if (suppressClick) return;
+  const tog = e.target.closest('[data-tog]'); if (tog) { G.collapsed[tog.dataset.tog] = !G.collapsed[tog.dataset.tog]; renderGantt(); return; }
+  const add = e.target.closest('[data-add]'); if (add) { e.stopPropagation(); openItem(null, add.dataset.add); return; }
+  const del = e.target.closest('[data-del]'); if (del) { e.stopPropagation(); askDelete(del.dataset.del); return; }
+  const row = e.target.closest('.g-row'); if (row) openItem(row.dataset.id);
+});
+$('gInner').addEventListener('pointerdown', e => {
+  const b = e.target.closest('.bar.plan.drag'); if (!b || e.button) return;
+  const o = idx.byId[b.closest('.g-row').dataset.id]; if (!o) return;
+  drag = { o, el: b, mode: e.target.dataset.h || 'move', x0: e.clientX, s: o.planStart, e: o.planEnd, d: 0 };
+  document.addEventListener('pointermove', onDragMove); document.addEventListener('pointerup', onDragEnd, { once: true });
+  e.preventDefault();
+});
+function onDragMove(e) {
+  if (!drag) return;
+  const d = pxToDays(e.clientX - drag.x0); drag.d = d;
+  let s = drag.s, en = drag.e;
+  if (drag.mode === 'move') { s = addDays(s, d); en = addDays(en, d); }
+  else if (drag.mode === 'l') { s = addDays(s, d); if (s > en) s = en; }
+  else { en = addDays(en, d); if (en < s) en = s; }
+  drag.ns = s; drag.ne = en;
+  const x1 = xOf(s), x2 = xOf(addDays(en, 1));
+  drag.el.style.left = x1 + 'px'; drag.el.style.width = Math.max(4, x2 - x1) + 'px';
+  const tip = $('tip'); tip.style.display = 'block'; tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 16) + 'px';
+  tip.innerHTML = '<b>Plan ใหม่</b><div class="tr"><span>เริ่ม</span><span>' + fmtDY(s) + '</span></div><div class="tr"><span>สิ้นสุด</span><span>' + fmtDY(en) + '</span></div>';
+}
+function onDragEnd() {
+  document.removeEventListener('pointermove', onDragMove); $('tip').style.display = 'none';
+  const dg = drag; drag = null;
+  if (!dg || !dg.d) return;
+  suppressClick = true; setTimeout(() => { suppressClick = false; }, 80);
+  const o = dg.o;
+  if (dg.ns === o.planStart && dg.ne === o.planEnd) return;
+  o.planStart = dg.ns; o.planEnd = dg.ne; rollup(); renderGantt();
+  persist([o]).then(r => {
+    if (!r || (r.conflicts || []).includes(o.id) || (r.denied || []).includes(o.id)) return;
+    setUndo('ย้ายแผน "' + o.name + '" แล้ว', async () => {
+      const cur = idx.byId[o.id]; if (!cur) return;
+      await persist([Object.assign({}, cur, { planStart: dg.s, planEnd: dg.e })]); toast('เลิกทำแล้ว', 'ok');
+    });
+  });
+}
+$('gInner').addEventListener('mousemove', e => {
+  if (drag) return;
+  const b = e.target.closest('.bar,.ms'), tip = $('tip');
+  if (!b) { tip.style.display = 'none'; return; }
+  const o = idx.byId[b.closest('.g-row').dataset.id]; if (!o) return;
+  const m = lastM[o.id] || { plan: 0, act: o.pct }, h = health(o, m, lastToday);
+  tip.innerHTML = `<b>${esc(o.name)}</b><div class="tl">${LEVEL_NAME[o.level]} · ${esc(o.owner || '—')}</div>
+    <div class="tr"><span>Plan</span><span>${fmtDY(o.planStart)} – ${fmtDY(o.planEnd)}</span></div>
+    <div class="tr"><span>Actual</span><span>${isDate(o.actualStart) ? fmtDY(o.actualStart) + ' – ' + (o.status === 'done' ? fmtDY(o.actualEnd) : 'ปัจจุบัน') : 'ยังไม่เริ่ม'}</span></div>
+    ${b.dataset.seg ? (p => `<div class="tr"><span>ช่วงนี้</span><span>${STATUS[p[0]].label} · ${fmtD(p[1])} – ${fmtD(p[2])}</span></div>`)(b.dataset.seg.split('|')) : ''}
+    <div class="tr"><span>ความคืบหน้า</span><span>Plan ${m.plan}% · Actual ${m.act}%</span></div>
+    ${isDate(o.baseStart) ? `<div class="tr"><span>Baseline</span><span>${fmtDY(o.baseStart)} – ${fmtDY(o.baseEnd)}</span></div>` : ''}
+    <div class="tr"><span>สถานะ</span><span>${STATUS[o.status].label} · ${esc(h.text)}</span></div>`;
+  tip.style.display = 'block';
+  tip.style.left = Math.min(e.clientX + 14, innerWidth - 310) + 'px'; tip.style.top = Math.min(e.clientY + 16, innerHeight - 190) + 'px';
+});
+$('gInner').addEventListener('mouseleave', () => { $('tip').style.display = 'none'; });
+
+// ═══════════ ITEM MODAL ═══════════
+const opt = (v, l, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`;
+function modalOpen() { return document.querySelector('.ov.on') !== null; }
+function closeItem() { $('ovItem').classList.remove('on'); }
+function openItem(id, parentId) {
+  const ex = id ? idx.byId[id] : null, parent = parentId ? idx.byId[parentId] : null;
+  if (id && !ex) return;
+  const level = ex ? ex.level : (parent ? parent.level + 1 : 1);
+  const kids = ex ? (idx.kids[ex.id] || []) : [], leaf = !kids.length;
+  const lockedForMe = ex ? (isLocked(ex) && !isAdmin()) : (parent ? (isLocked(parent) && !isAdmin()) : false);
+  const t = todayStr(), base = (G.year === +t.slice(0, 4)) ? t : G.year + '-01-01';
+  const o = ex ? Object.assign({}, ex) : {
+    id: '', parentId: parent ? parent.id : '', level, name: '', dept: parent ? parent.dept : (G.dept !== 'all' ? G.dept : ''),
+    owner: '', cat: '', prio: 'med',
+    color: level === 1 ? PALETTE[idx.roots.length % PALETTE.length] : '',
+    planStart: level === 1 ? G.year + '-01-01' : base, planEnd: level === 1 ? G.year + '-12-31' : addDays(base, 13),
+    actualStart: '', actualEnd: '', pct: 0, weight: 1, status: 'todo', note: '', rev: 0
+  };
+  const planRO = !leaf || lockedForMe, doneLocked = leaf && ex && ex.status === 'done' && !isAdmin();
+  const crumb = []; let c = parent || (ex && ex.parentId ? idx.byId[ex.parentId] : null);
+  while (c) { crumb.unshift(c.name); c = c.parentId ? idx.byId[c.parentId] : null; }
+  const statuses = Object.keys(STATUS).filter(k => isAdmin() || k !== 'done' || o.status === 'done');
+  const swatches = PALETTE.map(p => `<i data-c="${p}" style="background:${p}" class="${p === o.color ? 'sel' : ''}"></i>`).join('');
+
+  $('modalItem').innerHTML = `
+    <h2>${LEVEL_NAME[level]} — ${ex ? 'รายละเอียด / แก้ไข' : 'เพิ่มใหม่'}${ex && ex.level === 1 && ex.locked ? ' 🔒' : ''}</h2>
+    <div class="crumb">${crumb.length ? esc(crumb.join(' › ')) : 'ระดับบนสุดของแผน'}</div>
+    ${lockedForMe ? '<div class="banner lock">🔒 Plan ถูกล็อกแล้ว — แก้ไขวัน Plan หรือเพิ่ม/ลบรายการได้เฉพาะระดับอนุมัติ · อัปเดตความคืบหน้า (Actual) ได้ตามปกติ</div>' : ''}
+    ${!leaf ? '<div class="banner info">รายการนี้มีรายการย่อย — วันที่ Plan, Actual, % และสถานะ คำนวณอัตโนมัติจากรายการย่อย</div>' : ''}
+    ${doneLocked ? '<div class="banner lock">ผู้อนุมัติปิดงานนี้แล้ว — แก้ไขสถานะ/% ได้เฉพาะระดับอนุมัติ</div>' : ''}
+    <div class="fld"><label class="fl">ชื่อ${LEVEL_NAME[level]}</label><input class="in" id="m_name" value="${esc(o.name)}" ${lockedForMe ? 'disabled' : ''} placeholder="${level === 1 ? 'เช่น ลดของเสีย Calotte 4A ปี ' + yearBE(G.year) : level === 2 ? 'เช่น ปรับพารามิเตอร์เตาอบ' : 'เช่น ทดลองอุณหภูมิ 3 ระดับ'}"></div>
+    <div class="grid3">
+      <div class="fld"><label class="fl">ผู้รับผิดชอบ</label><select class="in" id="m_owner" ${lockedForMe ? 'disabled' : ''}><option value="">—</option>${withCur(OWNERS, o.owner).map(n => opt(n, n, o.owner)).join('')}</select></div>
+      <div class="fld"><label class="fl">แผนก</label><select class="in" id="m_dept" ${lockedForMe ? 'disabled' : ''}><option value="">—</option>${withCur(DEPTS, o.dept).map(n => opt(n, n, o.dept)).join('')}</select></div>
+      <div class="fld"><label class="fl">น้ำหนักงาน</label><input class="in" id="m_weight" type="number" min="0.1" step="0.1" value="${o.weight}" ${lockedForMe ? 'disabled' : ''}></div>
+    </div>
+    <div class="grid2">
+      <div class="fld"><label class="fl">หมวดหมู่ PQCDSM</label><select class="in" id="m_cat" ${lockedForMe ? 'disabled' : ''}><option value="">—</option>${CATS.map(n => opt(n, n, o.cat)).join('')}</select></div>
+      <div class="fld"><label class="fl">ความสำคัญ</label><select class="in" id="m_prio" ${lockedForMe ? 'disabled' : ''}>${Object.keys(PRIOS).map(k => opt(k, PRIOS[k], o.prio)).join('')}</select></div>
+    </div>
+    ${level === 1 ? `<div class="fld"><label class="fl">สีของแผน</label><div class="sw" id="m_colors">${swatches}</div><input type="hidden" id="m_color" value="${esc(o.color)}"></div>` : ''}
+    <div class="sec">📘 Plan (แผน)</div>
+    <div class="grid2">
+      <div class="fld"><label class="fl">เริ่ม</label><input class="in" id="m_ps" type="date" value="${o.planStart}" ${planRO ? 'disabled' : ''}></div>
+      <div class="fld"><label class="fl">สิ้นสุด</label><input class="in" id="m_pe" type="date" value="${o.planEnd}" ${planRO ? 'disabled' : ''}></div>
+    </div>
+    ${ex && isDate(ex.baseStart) ? `<div class="msg">📌 Baseline (แผนตั้งต้นตอนล็อก): ${fmtDY(ex.baseStart)} – ${fmtDY(ex.baseEnd)}${(ex.planEnd !== ex.baseEnd || ex.planStart !== ex.baseStart) ? ' · <b style="color:var(--warn)">Plan ปัจจุบันต่างจาก Baseline ' + (diffDays(ex.baseEnd, ex.planEnd) >= 0 ? '+' : '') + diffDays(ex.baseEnd, ex.planEnd) + ' วัน (วันสิ้นสุด)</b>' : ''}</div>` : (ex && isLocked(ex) ? '<div class="msg">เพิ่มหลังล็อก Plan (ไม่อยู่ใน Baseline)</div>' : '')}
+    <div class="sec">⛓ Milestone / งานที่ต้องรอ</div>
+    ${leaf ? `<label class="chk"><input type="checkbox" id="m_ms" ${o.milestone ? 'checked' : ''} ${planRO ? 'disabled' : ''}> ◆ เป็น Milestone (จุดวันที่เดียว — ใช้วัน "สิ้นสุด" ของ Plan เป็นวันที่)</label>` : ''}
+    <div class="fld"><label class="fl">ต้องรอให้งานเหล่านี้เสร็จก่อน (Predecessor)</label><div class="chips" id="m_deps"></div>
+      ${lockedForMe ? '' : '<select class="in" id="m_depadd"></select>'}</div>
+    <div class="sec">📗 Actual (ทำจริง)</div>
+    <div class="grid3">
+      <div class="fld"><label class="fl">สถานะ</label><select class="in" id="m_status" ${(!leaf || doneLocked) ? 'disabled' : ''}>${statuses.map(k => opt(k, STATUS[k].label, o.status)).join('')}</select></div>
+      <div class="fld"><label class="fl">% ที่ทำจริง</label><input class="in" id="m_pct" type="number" min="0" max="100" step="5" value="${o.pct}" ${(!leaf || doneLocked) ? 'disabled' : ''}></div>
+      <div class="fld"><label class="fl">เริ่มจริง</label><input class="in" id="m_as" type="date" value="${o.actualStart}" ${(!leaf || doneLocked) ? 'disabled' : ''}></div>
+    </div>
+    <div class="grid3"><div class="fld"><label class="fl">เสร็จจริง</label><input class="in" id="m_ae" type="date" value="${o.actualEnd}" ${(!leaf || !isAdmin()) ? 'disabled' : ''}></div>
+      <div class="fld" style="grid-column:span 2"><label class="fl">หมายเหตุ</label><input class="in" id="m_note" value="${esc(o.note)}" ${lockedForMe && !leaf ? 'disabled' : ''}></div></div>
+    ${!isAdmin() && leaf ? '<div class="msg">* การปิดงาน "เสร็จสิ้น" ต้องให้ผู้อนุมัติยืนยัน — หากกรอก 100% / เสร็จสิ้น ระบบจะส่งเป็น "รอตรวจสอบ"</div>' : ''}
+    ${ex ? '<div class="sec">📎 ไฟล์แนบ (รูปภาพ / PDF)</div><div class="files" id="m_files"></div><div style="margin-top:8px"><label class="btn" style="cursor:pointer">＋ แนบไฟล์<input type="file" id="m_file" accept="image/*,application/pdf" multiple hidden></label> <span class="msg">รูปจะถูกย่อให้อัตโนมัติ · PDF ไม่เกิน 5MB · แนบได้ 12 ไฟล์ต่อรายการ</span></div>' : ''}
+    ${ex ? `<div class="sec">💬 ความเห็น <span class="msg" id="m_cmn"></span></div><div id="m_cm"><span class="msg">กำลังโหลด…</span></div>
+      <div class="fld" style="margin:8px 0 6px"><label class="fl">ชื่อของคุณ (แสดงในความเห็น · ไม่ได้ยืนยันตัวตน)</label><input class="in" id="cm_who" list="ownerList" maxlength="40" placeholder="เช่น Tawin"></div>
+      <div style="display:flex;gap:8px"><textarea class="in" id="cm_tx" rows="2" maxlength="1000" placeholder="พิมพ์ความเห็น… ใช้ @ชื่อ เพื่อเรียกคน" style="resize:vertical"></textarea><button class="btn pri" id="cm_go" style="align-self:flex-end">ส่ง</button></div>` : ''}
+    ${ex && leaf ? '<div class="sec">🕒 ประวัติอัปเดตรายสัปดาห์</div><div class="hist" id="m_hist"><span class="msg">กำลังโหลด…</span></div>' : ''}
+    <div class="foot"><div style="display:flex;gap:8px">
+      ${ex && isAdmin() ? '<button class="btn danger" id="m_del">🗑 ลบ</button>' : ''}
+      ${ex && isAdmin() && level === 1 ? `<button class="btn" id="m_lock">${ex.locked ? '🔓 ปลดล็อก Plan' : '🔒 ล็อก Plan (บันทึก Baseline)'}</button>` : ''}
+    </div><div style="display:flex;gap:8px"><button class="btn" id="m_cancel">ปิด</button><button class="btn pri" id="m_save">✓ บันทึก</button></div></div>`;
+  $('ovItem').classList.add('on');
+  $('m_cancel').onclick = closeItem;
+  $('m_save').onclick = () => saveItem(ex, parent, level, leaf, doneLocked);
+  if ($('m_del')) $('m_del').onclick = () => { closeItem(); askDelete(ex.id); };
+  if ($('m_lock')) $('m_lock').onclick = () => askLock(ex);
+  mDeps = (o.dependsOn || '').split(',').filter(Boolean); mSelf = ex ? ex.id : '';
+  renderDeps(lockedForMe);
+  if ($('m_depadd')) $('m_depadd').onchange = e => { const v = e.target.value; if (v && !mDeps.includes(v)) mDeps.push(v); renderDeps(false); };
+  if (ex) { initComments(ex.id); renderFiles(ex.id); $('m_file').onchange = e => { const fl = [...e.target.files]; e.target.value = ''; uploadFiles(ex.id, fl); }; }
+  const cols = $('m_colors');
+  if (cols) cols.onclick = e => { const i = e.target.closest('i'); if (!i) return; cols.querySelectorAll('i').forEach(x => x.classList.remove('sel')); i.classList.add('sel'); $('m_color').value = i.dataset.c; };
+  if (ex && leaf) api('getLog', { itemId: ex.id }).then(r => {
+    const h = $('m_hist'); if (!h) return;
+    h.innerHTML = r.log.length ? r.log.map(l => `<div><span>${fmtDY(l.date)}</span><span><b>${l.pct}%</b> · ${esc(STATUS[l.status] ? STATUS[l.status].label : '')} ${l.note ? '· ' + esc(l.note) : ''} <i style="color:var(--dim)">${esc(l.by)}</i></span></div>`).join('') : '<span class="msg">ยังไม่มีประวัติ</span>';
+  }).catch(() => { const h = $('m_hist'); if (h) h.innerHTML = '<span class="msg">โหลดประวัติไม่สำเร็จ</span>'; });
+}
+let mDeps = [], mSelf = '';
+function itemPath(o) { const p = []; let c = o, g = 0; while (c && g++ < 5) { p.unshift(c.name); c = c.parentId ? idx.byId[c.parentId] : null; } return p.join(' › '); }
+function renderDeps(ro) {
+  $('m_deps').innerHTML = mDeps.length ? mDeps.map(id => { const p = idx.byId[id]; return `<span title="${esc(p ? itemPath(p) : id)}">${esc(p ? p.name : id + ' (ไม่พบ)')}${ro ? '' : `<b data-rd="${esc(id)}">✕</b>`}</span>`; }).join('') : '<span class="msg" style="background:none;padding:0">ไม่มี</span>';
+  $('m_deps').querySelectorAll('[data-rd]').forEach(b => { b.onclick = () => { mDeps = mDeps.filter(x => x !== b.dataset.rd); renderDeps(false); }; });
+  const sel = $('m_depadd'); if (!sel) return;
+  const banned = new Set([mSelf]); const down = o => (idx.kids[o.id] || []).forEach(c => { banned.add(c.id); down(c); }); if (mSelf && idx.byId[mSelf]) down(idx.byId[mSelf]);
+  let ops = '<option value="">＋ เลือกงานที่ต้องรอ…</option>';
+  const walk = o => { if (!banned.has(o.id) && !mDeps.includes(o.id)) ops += `<option value="${esc(o.id)}">${'　'.repeat(o.level - 1)}${esc(o.name)}</option>`; (idx.kids[o.id] || []).forEach(walk); };
+  idx.roots.forEach(walk); sel.innerHTML = ops;
+}
+// ── ไฟล์แนบ ──
+const fmtSize = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+function renderFiles(id) {
+  const box = $('m_files'); if (!box) return;
+  const o = idx.byId[id]; let fl = []; try { fl = JSON.parse((o && o.files) || '[]'); } catch (e) { }
+  box.innerHTML = fl.length ? fl.map(f => {
+    const img = (f.mime || '').indexOf('image/') === 0, can = isAdmin() || (session.name && f.by === session.name);
+    return `<div class="fl-i"><a href="https://drive.google.com/file/d/${esc(f.id)}/view" target="_blank" rel="noopener"><div class="th" ${img ? `style="background-image:url('https://drive.google.com/thumbnail?id=${esc(f.id)}&sz=w300')"` : ''}>${img ? '' : '📄'}</div></a>
+      ${can ? `<span class="x" data-fx="${esc(f.id)}" title="ลบไฟล์">✕</span>` : ''}<div class="nm" title="${esc(f.name)}">${esc(f.name)}</div><div class="mt">${esc(f.by) || '—'} · ${fmtSize(f.size || 0)}</div></div>`;
+  }).join('') : '<span class="msg">ยังไม่มีไฟล์แนบ</span>';
+  box.querySelectorAll('[data-fx]').forEach(x => { x.onclick = () => openConfirm('ลบไฟล์แนบ', 'ลบไฟล์นี้ออกจาก Drive ?', '🗑 ลบ', async () => { const r = await callAndApply('deleteFile', { itemId: id, fileId: x.dataset.fx }, 'ลบไฟล์แล้ว'); if (r) renderFiles(id); }); });
+}
+function readB64(blob) { return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = () => no(new Error('อ่านไฟล์ไม่ได้')); r.readAsDataURL(blob); }); }
+async function prepFile(f) {
+  const t = f.type;
+  if (t === 'application/pdf' || t === 'image/gif') {
+    if (f.size > 5 * 1048576) throw new Error(f.name + ' ใหญ่เกิน 5MB');
+    return { name: f.name, type: t, b64: await readB64(f) };
+  }
+  if (t.indexOf('image/') !== 0) throw new Error(f.name + ' — รองรับเฉพาะรูปภาพและ PDF');
+  const url = URL.createObjectURL(f);
+  try {
+    const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('เปิดรูปไม่ได้: ' + f.name)); i.src = url; });
+    const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+    c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+    const blob = await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.85));
+    if (!blob || blob.size > 5 * 1048576) throw new Error(f.name + ' ใหญ่เกินไปหลังย่อ');
+    return { name: f.name.replace(/\.[^.]+$/, '') + '.jpg', type: 'image/jpeg', b64: await readB64(blob) };
+  } finally { URL.revokeObjectURL(url); }
+}
+async function uploadFiles(id, list) {
+  for (const f of list) {
+    try {
+      const u = await prepFile(f);
+      const r = await callAndApply('uploadFile', { itemId: id, fileName: u.name, mimeType: u.type, base64Data: u.b64 }, 'แนบไฟล์แล้ว: ' + u.name);
+      if (!r) break; renderFiles(id);
+    } catch (e) { toast('⚠️ ' + e.message, 'warn'); }
+  }
+}
+function saveItem(ex, parent, level, leaf, doneLocked) {
+  const v = id => ($(id) ? $(id).value : '');
+  const name = v('m_name').trim();
+  if (!name) { toast('กรุณากรอกชื่อ', 'warn'); return; }
+  const t = todayStr(), n = ex ? Object.assign({}, idx.byId[ex.id] || ex) : { id: genId(), parentId: parent ? parent.id : '', level, rev: 0, actualStart: '', actualEnd: '', pct: 0, status: 'todo', lastUpdate: '' };
+  n.name = name; n.owner = v('m_owner'); n.dept = v('m_dept'); n.cat = v('m_cat'); n.prio = v('m_prio') || 'med';
+  n.weight = Number(v('m_weight')) > 0 ? Number(v('m_weight')) : 1; n.note = v('m_note');
+  if (level === 1) n.color = v('m_color');
+  if (!$('m_ps').disabled) {
+    n.planStart = v('m_ps'); n.planEnd = v('m_pe');
+    if (!isDate(n.planStart) || !isDate(n.planEnd)) { toast('กรุณาระบุวันที่ Plan เริ่ม–สิ้นสุด', 'warn'); return; }
+    if (n.planEnd < n.planStart) { toast('วันสิ้นสุด Plan ต้องไม่ก่อนวันเริ่ม', 'warn'); return; }
+  }
+  if ($('m_ms') && !$('m_ms').disabled) { n.milestone = $('m_ms').checked; if (n.milestone && isDate(n.planEnd)) n.planStart = n.planEnd; }
+  if ($('m_depadd')) n.dependsOn = mDeps.join(',');
+  const log = [];
+  if (leaf && !doneLocked) {
+    const wasDone = !!ex && ex.status === 'done';
+    n.status = v('m_status') || n.status; n.pct = clamp(Math.round(Number(v('m_pct')) || 0), 0, 100);
+    n.actualStart = v('m_as'); if (!$('m_ae').disabled) n.actualEnd = v('m_ae');
+    if (isDate(n.actualStart) && isDate(n.actualEnd) && n.actualEnd < n.actualStart) { toast('วันเสร็จจริงต้องไม่ก่อนวันเริ่มจริง', 'warn'); return; }
+    applyRules(n, t, wasDone, isAdmin());
+    const changed = ex ? (n.pct !== ex.pct || n.status !== ex.status) : n.pct > 0;
+    if (changed) { n.lastUpdate = t; log.push({ itemId: n.id, weekStart: mondayOf(t), date: t, pct: n.pct, status: n.status, note: '(แก้จากหน้ารายละเอียด)' }); }
+    if (n._toReview) toast('ส่งเป็น "รอตรวจสอบ" แล้ว — รอผู้อนุมัติยืนยันการปิดงาน', 'warn');
+  }
+  if (!ex) {
+    const sib = parent ? (idx.kids[parent.id] || []) : idx.roots;
+    n.order = sib.reduce((m, c) => Math.max(m, c.order), 0) + 1;
+  }
+  closeItem();
+  persist([n], log).then(r => { if (r && !ex && n.level === 1) { G.year = +n.planStart.slice(0, 4) || G.year; renderCurrent(); } });
+  if (parent && G.collapsed[parent.id]) G.collapsed[parent.id] = false;
+}
+
+// confirm dialogs
+function openConfirm(title, msg, label, cb) {
+  $('cfTitle').textContent = title; $('cfMsg').innerHTML = msg; $('cfOk').textContent = label;
+  $('cfOk').onclick = () => { closeConfirm(); cb(); };
+  $('ovConfirm').classList.add('on');
+}
+function closeConfirm() { $('ovConfirm').classList.remove('on'); }
+function descCount(o) { let n = 0; (idx.kids[o.id] || []).forEach(c => { n += 1 + descCount(c); }); return n; }
+function askDelete(id) {
+  const o = idx.byId[id]; if (!o) return;
+  const n = descCount(o);
+  openConfirm('ยืนยันการลบ', `ลบ <b>${esc(o.name)}</b>${n ? ` และรายการย่อยทั้งหมด <b>${n}</b> รายการ` : ''} ?<br>การกระทำนี้ไม่สามารถย้อนกลับได้`, '🗑 ลบ', () => callAndApply('deleteItem', { id }, 'ลบแล้ว'));
+}
+function askLock(ex) {
+  closeItem();
+  if (ex.locked) openConfirm('ปลดล็อก Plan', `ปลดล็อก <b>${esc(ex.name)}</b> — ผู้ใช้ทั่วไปจะแก้ไขวัน Plan และเพิ่ม/ลบรายการได้อีกครั้ง`, '🔓 ปลดล็อก', () => callAndApply('setLock', { id: ex.id, locked: false }, 'ปลดล็อกแล้ว'));
+  else openConfirm('ล็อก Plan', `ล็อก <b>${esc(ex.name)}</b> ?<br>ระบบจะบันทึกวันที่ Plan ปัจจุบันของทุกรายการเป็น <b>Baseline</b> และผู้ใช้ทั่วไปจะแก้วัน Plan / เพิ่ม-ลบรายการไม่ได้ (อัปเดต Actual ได้ตามปกติ)`, '🔒 ล็อก', () => callAndApply('setLock', { id: ex.id, locked: true }, 'ล็อก Plan แล้ว — บันทึก Baseline เรียบร้อย'));
+}
+
+// ═══════════ WEEKLY UPDATE ═══════════
+function wkShift(k) { W.week = addDays(W.week, k * 7); renderWeekly(); }
+let OWNER_STALE = [];
+function copyStale() {
+  const today = todayStr(), wk0 = mondayOf(today), rows = OWNER_STALE.filter(r => r.stale.length);
+  const txt = !rows.length ? `✅ สัปดาห์ W${isoWeek(wk0)} ทุกคนอัปเดตงานครบแล้ว` :
+    `📌 งานที่ยังไม่อัปเดตสัปดาห์ W${isoWeek(wk0)} (${fmtDY(today)})\n` + rows.map(r => `\n👤 ${r.name} (${r.stale.length})\n` + r.stale.map(o => `  • ${o.name}${isDate(o.planEnd) && today > o.planEnd ? ' ⚠️เลยกำหนด' : ''}`).join('\n')).join('\n') + '\n\nกรุณาอัปเดตในหน้า "อัปเดตรายสัปดาห์" ครับ 🙏';
+  const done = () => toast('คัดลอกข้อความแล้ว — วางใน Line ได้เลย', 'ok');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, () => fallbackCopy(txt, done)); else fallbackCopy(txt, done);
+}
+function fallbackCopy(t, cb) { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); cb(); } catch (e) { toast('คัดลอกไม่สำเร็จ', 'warn'); } a.remove(); }
+function renderWeekly() {
+  const today = todayStr(), we = addDays(W.week, 6), M = metrics(today);
+  $('wkLabel').textContent = `W${isoWeek(W.week)} · ${fmtD(W.week)} – ${fmtD(we)} ${yearBE(+we.slice(0, 4))}`;
+  let nAll = 0, nUpd = 0, html = '';
+  const show = o => {
+    if (W.dept !== 'all' && o.dept !== W.dept) return false;
+    if (W.owner !== 'all' && o.owner !== W.owner) return false;
+    const upd = o.lastUpdate >= W.week && o.lastUpdate <= we;
+    if (upd) return true;
+    if (o.status === 'done') return false;
+    return W.all || (isDate(o.planStart) && o.planStart <= we);
+  };
+  idx.roots.forEach(m => {
+    const out = []; let lastAct = null;
+    const visit = (o, path) => {
+      const ch = idx.kids[o.id]; if (ch) { ch.forEach(c => visit(c, path.concat(o))); return; }
+      if (!show(o)) return;
+      const act = path.length > 1 ? path[path.length - 1] : null;
+      if (act && act !== lastAct) { out.push(`<tr class="g2"><td colspan="8" style="padding-left:24px">${esc(act.name)}</td></tr>`); lastAct = act; }
+      if (!act) lastAct = null;
+      out.push(wkRow(o, M, today, we, act ? 36 : 24));
+      nAll++; if (o.lastUpdate >= W.week && o.lastUpdate <= we) nUpd++;
+    };
+    visit(m, []);
+    if (out.length) html += `<tr class="g1"><td colspan="8"><i class="dot" style="background:${colorOf(m)}"></i> ${esc(m.name)} <span class="msg">${esc(m.dept)}</span> ${m.locked ? '🔒' : ''}</td></tr>` + out.join('');
+  });
+  $('wkBody').innerHTML = html || '<tr><td colspan="8" class="empty">ไม่มีงานที่ต้องอัปเดตในสัปดาห์นี้ (ลองติ๊ก "แสดงงานที่ยังไม่ถึงกำหนดด้วย")</td></tr>';
+  $('wkCount').textContent = `อัปเดตแล้ว ${nUpd}/${nAll} รายการ`;
+  const nd = Object.keys(W.draft).length;
+  $('wkSave').textContent = '💾 บันทึกอัปเดตสัปดาห์นี้' + (nd ? ` (${nd})` : '');
+}
+function wkRow(o, M, today, we, pl) {
+  const d = W.draft[o.id] || {}, m = M[o.id], upd = o.lastUpdate >= W.week && o.lastUpdate <= we;
+  const pv = d.pct !== undefined ? d.pct : o.pct, sv = d.status || o.status;
+  const sts = Object.keys(STATUS).filter(k => isAdmin() || k !== 'done' || o.status === 'done');
+  const dis = (o.status === 'done' && !isAdmin()) ? 'disabled' : '';
+  return `<tr data-id="${esc(o.id)}" class="${upd ? 'upd' : ''}${Object.keys(d).length ? ' edited' : ''}">
+    <td class="full" style="padding-left:${pl}px"><div style="font-weight:600">${esc(o.name)}</div><div class="msg">${esc(o.cat)}</div>${o.note && o.note.indexOf('↩') === 0 ? `<div class="msg" style="color:var(--bad);font-weight:600">${esc(o.note)}</div>` : ''}</td>
+    <td data-l="ผู้รับผิดชอบ">${esc(o.owner) || '—'}</td>
+    <td data-l="Plan" style="white-space:nowrap">${fmtD(o.planStart)} – ${fmtD(o.planEnd)}<div class="msg">ควรถึง ${m.plan}%</div></td>
+    <td class="full" data-l="ปัจจุบัน"><div class="pbar"><i style="width:${o.pct}%;background:${STATUS[o.status].color}"></i></div><div class="msg">${o.pct}% · ${STATUS[o.status].label}${o.lastUpdate ? ' · ล่าสุด ' + fmtD(o.lastUpdate) : ''}</div></td>
+    <td data-l="% ใหม่"><input class="in mini" type="number" min="0" max="100" step="5" data-f="pct" value="${pv}" ${dis}></td>
+    <td data-l="สถานะ"><select class="in" data-f="status" style="width:128px" ${dis}>${sts.map(k => opt(k, STATUS[k].label, sv)).join('')}</select></td>
+    <td class="full" data-l="หมายเหตุ / ปัญหา"><input class="in" data-f="note" placeholder="ปัญหา / สิ่งที่ทำสัปดาห์นี้" value="${esc(d.note || '')}" style="min-width:170px"></td>
+    <td class="full"><button class="btn" data-confirm="1" title="ยืนยันว่าไม่มีความคืบหน้าเปลี่ยนแปลง" ${dis}>${d.confirm ? '✔' : '＝'}</button></td></tr>`;
+}
+$('wkBody').addEventListener('input', wkEdit); $('wkBody').addEventListener('change', wkEdit);
+function wkEdit(e) {
+  const el = e.target.closest('[data-f]'); if (!el) return;
+  const tr = el.closest('tr'), id = tr.dataset.id, d = W.draft[id] || (W.draft[id] = {});
+  d[el.dataset.f] = el.value; weeklyDirty = true; tr.classList.add('edited'); persistDraft();
+  $('wkSave').textContent = '💾 บันทึกอัปเดตสัปดาห์นี้ (' + Object.keys(W.draft).length + ')';
+}
+$('wkBody').addEventListener('click', e => {
+  const b = e.target.closest('[data-confirm]'); if (!b) return;
+  const id = b.closest('tr').dataset.id, d = W.draft[id] || (W.draft[id] = {});
+  d.confirm = !d.confirm; if (!d.confirm && Object.keys(d).length === 1) delete W.draft[id];
+  weeklyDirty = Object.keys(W.draft).length > 0; persistDraft(); renderWeekly();
+});
+async function saveWeekly() {
+  const ids = Object.keys(W.draft); if (!ids.length) { toast('ยังไม่มีรายการที่แก้ไข', 'warn'); return; }
+  const today = todayStr(), we = addDays(W.week, 6), stamp = we < today ? we : today;
+  const ch = [], log = [], drop = [], sent = []; let toReview = 0;
+  ids.forEach(id => {
+    const o = idx.byId[id]; if (!o) { drop.push(id); return; } const d = W.draft[id];
+    const n = Object.assign({}, o), wasDone = o.status === 'done';
+    if (d.pct !== undefined && d.pct !== '') n.pct = clamp(Math.round(Number(d.pct) || 0), 0, 100);
+    if (d.status) n.status = d.status;
+    if (wasDone && !isAdmin()) { drop.push(id); return; }
+    applyRules(n, stamp, wasDone, isAdmin()); if (n._toReview) toReview++;
+    n.lastUpdate = stamp; ch.push(n); sent.push(id);
+    log.push({ itemId: id, weekStart: W.week, date: stamp, pct: n.pct, status: n.status, note: d.note || '' });
+  });
+  drop.forEach(id => { delete W.draft[id]; });
+  if (!ch.length) { persistDraft(); renderWeekly(); return; }
+  const r = await persist(ch, log);
+  if (!r) { renderWeekly(); return; } // บันทึกไม่สำเร็จ (เน็ตหลุด ฯลฯ) — ร่างยังอยู่ครบ
+  // ล้างร่างเฉพาะรายการที่บันทึกสำเร็จจริง — รายการที่ conflict / ถูกปฏิเสธ ยังอยู่ให้กดบันทึกซ้ำได้
+  const bad = new Set([].concat(r.conflicts || [], r.denied || [])), okIds = sent.filter(id => !bad.has(id));
+  okIds.forEach(id => { delete W.draft[id]; });
+  weeklyDirty = Object.keys(W.draft).length > 0; persistDraft();
+  if (okIds.length) toast('บันทึกอัปเดตรายสัปดาห์แล้ว (' + okIds.length + ' รายการ)', 'ok');
+  if (sent.length - okIds.length > 0) toast('ยังเหลือร่าง ' + (sent.length - okIds.length) + ' รายการที่ไม่ได้บันทึก (มีผู้อื่นแก้ก่อน หรือ Plan ถูกล็อก) — ตรวจแล้วกด 💾 อีกครั้ง', 'warn');
+  if (toReview) toast(toReview + ' รายการที่กรอก 100% ถูกส่งเป็น "รอตรวจสอบ" เพื่อรอผู้อนุมัติ', 'warn');
+  renderWeekly();
+}
+
+// ═══════════ DASHBOARD ═══════════
+function renderDash() {
+  if (loadErr && !items.length) { $('dashBody').innerHTML = errHtml(); return; }
+  const today = todayStr(), M = metrics(today), ms = idx.roots.filter(overlapsYear), wk0 = mondayOf(today);
+  const leaves = []; const collect = o => { const ch = idx.kids[o.id]; if (ch) ch.forEach(collect); else leaves.push(o); }; ms.forEach(collect);
+  const nd = leaves.filter(o => o.status === 'done').length;
+  const late = leaves.filter(o => o.status !== 'done' && isDate(o.planEnd) && today > o.planEnd).length;
+  const stale = leaves.filter(o => o.status !== 'done' && isDate(o.planStart) && o.planStart <= today && (o.lastUpdate || '') < wk0).length;
+  let sw = 0, sp = 0, sa = 0; ms.forEach(m => { const w = m.weight > 0 ? m.weight : 1; sw += w; sp += w * M[m.id].plan; sa += w * M[m.id].act; });
+  const P = sw ? Math.round(sp / sw) : 0, A = sw ? Math.round(sa / sw) : 0;
+  const spi = P > 0 ? (A / P).toFixed(2) : '—';
+  const months = THM.map((l, i) => ({ l, plan: 0, act: 0, k: G.year + '-' + pad2(i + 1) }));
+  leaves.forEach(o => {
+    if (isDate(o.planEnd) && o.planEnd.slice(0, 4) === String(G.year)) months[+o.planEnd.slice(5, 7) - 1].plan++;
+    if (o.status === 'done' && isDate(o.actualEnd) && o.actualEnd.slice(0, 4) === String(G.year)) months[+o.actualEnd.slice(5, 7) - 1].act++;
+  });
+  const mx = Math.max(1, ...months.map(m => Math.max(m.plan, m.act)));
+  const curM = today.slice(0, 4) === String(G.year) ? +today.slice(5, 7) - 1 : -1;
+  const rows = ms.map(m => {
+    const mm = M[m.id], h = health(m, mm, today); let lt = 0, cnt = 0;
+    const walk = o => { const ch = idx.kids[o.id]; if (ch) ch.forEach(walk); else { cnt++; if (o.status !== 'done' && isDate(o.planEnd) && today > o.planEnd) lt++; } }; walk(m);
+    return `<tr style="cursor:pointer" onclick="G.dept='all';G.owner='all';G.q='';G.qr='';G.st='all';G.cat='all';syncFilterUI();go('gantt')">
+      <td><i class="dot" style="background:${colorOf(m)}"></i> <b>${esc(m.name)}</b> ${m.locked ? '🔒' : ''}<div class="msg">${esc(m.dept) || '—'} · ${esc(m.owner) || '—'} · ${fmtD(m.planStart)} – ${fmtD(m.planEnd)}</div></td>
+      <td style="min-width:200px"><div class="msg" style="display:flex;justify-content:space-between"><span>Plan</span><b>${mm.plan}%</b></div><div class="pbar"><i style="width:${mm.plan}%;background:${colorOf(m)}55"></i></div>
+        <div class="msg" style="display:flex;justify-content:space-between;margin-top:5px"><span>Actual</span><b>${mm.act}%</b></div><div class="pbar"><i style="width:${mm.act}%;background:${colorOf(m)}"></i></div></td>
+      <td style="text-align:center;font-weight:700">${mm.plan > 0 ? (mm.act / mm.plan).toFixed(2) : '—'}</td>
+      <td style="text-align:center">${cnt}</td><td style="text-align:center;${lt ? 'color:var(--bad);font-weight:700' : ''}">${lt}</td>
+      <td><span class="chip ${h.cls}">${esc(h.text)}</span></td></tr>`;
+  }).join('');
+  // สรุปรายคน: งานที่ถึงกำหนดเริ่มแล้วแต่ยังไม่อัปเดตสัปดาห์นี้ / เลยกำหนด
+  const by = {};
+  leaves.forEach(o => {
+    if (o.status === 'done' || !isDate(o.planStart) || o.planStart > today) return;
+    const k = o.owner || 'ไม่ระบุผู้รับผิดชอบ', r = by[k] || (by[k] = { name: k, active: 0, stale: [], late: 0 });
+    r.active++;
+    if ((o.lastUpdate || '') < wk0) r.stale.push(o);
+    if (isDate(o.planEnd) && today > o.planEnd) r.late++;
+  });
+  const owners = Object.values(by).sort((a, b) => b.stale.length - a.stale.length || b.late - a.late || a.name.localeCompare(b.name));
+  OWNER_STALE = owners;
+  const ST = calcStats(leaves, today), byDept = groupSummary(leaves, o => o.dept || 'ไม่ระบุแผนก', M, today), byCat = groupSummary(leaves, o => o.cat || 'ไม่ระบุหมวด', M, today);
+  const ownerRows = owners.map(r => `<tr><td><b>${esc(r.name)}</b></td><td style="text-align:center">${r.active}</td>
+      <td style="text-align:center;${r.stale.length ? 'color:var(--warn);font-weight:700' : 'color:var(--ok)'}">${r.stale.length ? r.stale.length : '✓'}</td>
+      <td style="text-align:center;${r.late ? 'color:var(--bad);font-weight:700' : ''}">${r.late}</td>
+      <td class="msg" style="line-height:1.6">${r.stale.slice(0, 6).map(o => esc(o.name)).join(' · ')}${r.stale.length > 6 ? ' … +' + (r.stale.length - 6) : ''}</td></tr>`).join('');
+  $('dashBody').innerHTML = `
+    ${dashBar()}<div class="kpis">
+      <div class="kpi"><div class="l">Master Plan (ปี ${yearBE(G.year)})</div><div class="v">${ms.length}</div><div class="s">งานย่อย/ปลายทาง ${leaves.length} รายการ</div></div>
+      <div class="kpi"><div class="l">Plan ควรถึง ณ วันนี้</div><div class="v" style="color:var(--accent)">${P}%</div></div>
+      <div class="kpi"><div class="l">Actual ที่ทำได้จริง</div><div class="v" style="color:${A < P - 10 ? 'var(--bad)' : 'var(--ok)'}">${A}%</div><div class="s">SPI = ${spi} (Actual ÷ Plan)</div></div>
+      <div class="kpi"><div class="l">เสร็จแล้ว</div><div class="v" style="color:var(--ok)">${nd}<span style="font-size:14px;color:var(--dim)">/${leaves.length}</span></div></div>
+      <div class="kpi"><div class="l">เลยกำหนด</div><div class="v" style="color:var(--bad)">${late}</div></div>
+      <div class="kpi"><div class="l">ยังไม่อัปเดตสัปดาห์นี้</div><div class="v" style="color:var(--warn)">${stale}</div><div class="s">งานที่ถึงกำหนดเริ่มแล้ว</div></div>
+    </div>
+    ${statsRow(ST)}
+    <div class="card"><h3>📋 ภาพรวมรายแผน — Plan vs Actual</h3>
+      ${ms.length ? `<table class="t"><thead><tr><th>Master Plan</th><th>ความคืบหน้า</th><th style="text-align:center">SPI</th><th style="text-align:center">งาน</th><th style="text-align:center">เลยกำหนด</th><th>สถานะ</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">ยังไม่มี Master Plan ในปีนี้</div>'}</div>
+    ${kpiCard(ms, today)}
+    <div class="card"><h3 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">👥 งานค้างอัปเดต / เลยกำหนด รายคน <span class="msg">(สัปดาห์ W${isoWeek(wk0)} · งานที่ถึงกำหนดเริ่มแล้วและยังไม่เสร็จ)</span>
+      <button class="btn" style="margin-left:auto" onclick="copyStale()">📋 คัดลอกข้อความตามงาน (Line)</button></h3>
+      ${owners.length ? `<table class="t"><thead><tr><th>ผู้รับผิดชอบ</th><th style="text-align:center">งานที่กำลังทำ</th><th style="text-align:center">ยังไม่อัปเดต</th><th style="text-align:center">เลยกำหนด</th><th>งานที่ค้างอัปเดต</th></tr></thead><tbody>${ownerRows}</tbody></table>` : '<div class="empty">ไม่มีงานที่ถึงกำหนดเริ่มและยังไม่เสร็จ</div>'}</div>
+    ${groupCard(byDept, byCat)}${trendCard()}<div class="card"><h3>📅 จำนวนงานที่ครบกำหนด (Plan) เทียบกับที่เสร็จจริง (Actual) รายเดือน — ปี ${yearBE(G.year)}</h3>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:190px;padding-top:8px">${months.map((m, i) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+        <div style="display:flex;align-items:flex-end;gap:3px;height:150px"><div title="Plan ${m.plan}" style="width:14px;height:${m.plan / mx * 140 + (m.plan ? 4 : 1)}px;background:#6366F155;border:1.5px solid #6366F1;border-radius:4px 4px 0 0"></div><div title="Actual ${m.act}" style="width:14px;height:${m.act / mx * 140 + (m.act ? 4 : 1)}px;background:#34D399;border-radius:4px 4px 0 0"></div></div>
+        <div class="msg" style="margin-top:4px;${i === curM ? 'font-weight:800;color:var(--text)' : ''}">${m.l}</div><div class="msg" style="font-size:10px">${m.plan}/${m.act}</div></div>`).join('')}</div>
+      <div class="legend" style="margin:10px 0 0"><span><i style="background:#6366F155;border:1.5px solid #6366F1"></i>Plan (ครบกำหนด)</span><span><i style="background:#34D399"></i>Actual (เสร็จจริง)</span></div></div>`;
+}
+
+// ═══════════ DRAFT (เก็บร่างอัปเดตรายสัปดาห์ลงเครื่อง) ═══════════
+const draftKey = () => 'pf2_draft_' + (session ? session.role : '');
+function loadDraft() {
+  let d = {};
+  try { d = JSON.parse(store.get(draftKey()) || '{}') || {}; } catch (e) { d = {}; }
+  W.draft = (d && typeof d === 'object' && !Array.isArray(d)) ? d : {};
+  weeklyDirty = Object.keys(W.draft).length > 0;
+}
+function persistDraft() {
+  const k = draftKey();
+  if (Object.keys(W.draft).length) store.set(k, JSON.stringify(W.draft)); else store.del(k);
+}
+function clearDraft() {
+  const n = Object.keys(W.draft).length;
+  if (!n) { toast('ไม่มีร่างที่ค้างอยู่', 'warn'); return; }
+  openConfirm('ล้างร่างอัปเดต', 'ทิ้งร่างที่ยังไม่ได้บันทึก <b>' + n + '</b> รายการ ?', '🗑 ล้างร่าง', () => { W.draft = {}; weeklyDirty = false; persistDraft(); renderWeekly(); });
+}
+
+// ═══════════ APPROVAL INBOX (หน้ารออนุมัติ) ═══════════
+const RV = { sel: new Set() };
+function reviewList() {
+  const out = [];
+  const walk = o => { const ch = idx.kids[o.id]; if (ch) ch.forEach(walk); else if (o.status === 'review') out.push(o); };
+  idx.roots.forEach(walk);
+  return out.sort((a, b) => String(a.lastUpdate).localeCompare(String(b.lastUpdate)) || String(a.name).localeCompare(String(b.name)));
+}
+function updReviewBdg() {
+  const b = $('reviewBdg'); if (!b) return;
+  const c = isAdmin() ? reviewList().length : 0;
+  b.textContent = c > 99 ? '99+' : c; b.hidden = !c;
+}
+function updRevBulk() {
+  const b = $('revBulk'); if (!b) return;
+  b.disabled = !RV.sel.size; b.textContent = '✔ อนุมัติที่เลือก' + (RV.sel.size ? ' (' + RV.sel.size + ')' : '');
+}
+function renderReview() {
+  if (!isAdmin()) { $('revBody').innerHTML = '<tr><td colspan="8" class="empty">เฉพาะระดับ Admin</td></tr>'; return; }
+  const list = reviewList(), today = todayStr();
+  RV.sel.forEach(id => { if (!list.some(o => o.id === id)) RV.sel.delete(id); });
+  $('revBody').innerHTML = list.length ? list.map(o => {
+    const par = o.parentId && idx.byId[o.parentId] ? itemPath(idx.byId[o.parentId]) : '';
+    const wait = isDate(o.lastUpdate) ? diffDays(o.lastUpdate, today) : null;
+    const lateSub = isDate(o.planEnd) && isDate(o.lastUpdate) && o.lastUpdate > o.planEnd;
+    return `<tr data-id="${esc(o.id)}">
+      <td class="full"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-sel="${esc(o.id)}"${RV.sel.has(o.id) ? ' checked' : ''}> <span class="msg">เลือก</span></label></td>
+      <td class="full"><div style="font-weight:600">${esc(o.name)}</div><div class="msg">${esc(par)}</div></td>
+      <td data-l="ผู้รับผิดชอบ">${esc(o.owner) || '—'}</td>
+      <td data-l="Plan" style="white-space:nowrap">${fmtD(o.planStart)} – ${fmtD(o.planEnd)}${lateSub ? '<div><span class="chip warn">ส่งหลังกำหนด</span></div>' : ''}</td>
+      <td data-l="ความคืบหน้า"><b>${o.pct}%</b></td>
+      <td data-l="ส่งตรวจเมื่อ" style="white-space:nowrap">${isDate(o.lastUpdate) ? fmtD(o.lastUpdate) : '—'}${wait != null ? `<div class="msg">รอมา ${wait} วัน</div>` : ''}</td>
+      <td class="msg full" data-l="หมายเหตุ" style="max-width:260px;white-space:normal">${esc(o.note) || '—'}</td>
+      <td class="full" style="white-space:nowrap"><button class="btn pri" data-ap="${esc(o.id)}">✔ อนุมัติ</button> <button class="btn danger" data-rj="${esc(o.id)}">↩ ตีกลับ</button> <button class="btn" data-op="${esc(o.id)}" title="เปิดรายละเอียด">✎</button></td></tr>`;
+  }).join('') : '<tr><td colspan="8" class="empty">🎉 ไม่มีงานรออนุมัติ</td></tr>';
+  $('revCount').textContent = list.length ? list.length + ' รายการ' : '';
+  $('revAll').checked = list.length > 0 && RV.sel.size === list.length;
+  updRevBulk();
+}
+$('revBody').addEventListener('click', e => {
+  const a = e.target.closest('[data-ap]'); if (a) { approveItems([a.dataset.ap]); return; }
+  const r = e.target.closest('[data-rj]'); if (r) { askReject(r.dataset.rj); return; }
+  const o = e.target.closest('[data-op]'); if (o) openItem(o.dataset.op);
+});
+$('revBody').addEventListener('change', e => {
+  const c = e.target.closest('[data-sel]'); if (!c) return;
+  if (c.checked) RV.sel.add(c.dataset.sel); else RV.sel.delete(c.dataset.sel);
+  $('revAll').checked = reviewList().length > 0 && RV.sel.size === reviewList().length; updRevBulk();
+});
+function revToggleAll(on) { RV.sel = new Set(on ? reviewList().map(o => o.id) : []); renderReview(); }
+function approveSelected() {
+  const ids = [...RV.sel]; if (!ids.length) return;
+  if (ids.length === 1) { approveItems(ids); return; }
+  openConfirm('อนุมัติปิดงาน', 'อนุมัติปิดงาน <b>' + ids.length + '</b> รายการที่เลือก ?', '✔ อนุมัติ', () => approveItems(ids));
+}
+async function approveItems(ids) {
+  const t = todayStr(), ch = [], log = [];
+  ids.forEach(id => {
+    const o = idx.byId[id]; if (!o || o.status !== 'review') return;
+    const n = Object.assign({}, o);
+    n.status = 'done'; n.pct = 100;
+    // วันเสร็จจริง = วันที่ผู้รับผิดชอบส่งตรวจ (ไม่ใช่วันที่กดอนุมัติ) — อนุมัติช้าจะไม่ทำให้งานดูเสร็จช้า
+    n.actualEnd = (isDate(o.lastUpdate) && o.lastUpdate <= t && (!isDate(o.actualStart) || o.lastUpdate >= o.actualStart)) ? o.lastUpdate : t;
+    applyRules(n, t, false, true);
+    n.lastUpdate = t; ch.push(n);
+    log.push({ itemId: id, weekStart: mondayOf(t), date: t, pct: 100, status: 'done', note: '✔ อนุมัติปิดงาน' });
+  });
+  if (!ch.length) { toast('ไม่มีรายการที่ต้องอนุมัติ', 'warn'); return; }
+  const r = await persist(ch, log);
+  if (r) { ch.forEach(n => RV.sel.delete(n.id)); toast('อนุมัติปิดงานแล้ว ' + ch.length + ' รายการ', 'ok'); }
+}
+function askReject(id) {
+  const o = idx.byId[id]; if (!o) return;
+  openConfirm('ตีกลับงาน', 'ตีกลับ <b>' + esc(o.name) + '</b> ให้ผู้รับผิดชอบแก้ไข<div style="margin-top:10px"><label class="fl">เหตุผล</label><input class="in" id="rjReason" maxlength="200" placeholder="เช่น ยังไม่แนบรูปหลักฐาน / ผลทดสอบไม่ผ่านเกณฑ์"></div>', '↩ ตีกลับ', () => rejectItem(id, ($('rjReason') || {}).value));
+  setTimeout(() => { const i = $('rjReason'); if (i) i.focus(); }, 50);
+}
+async function rejectItem(id, reason) {
+  reason = String(reason || '').trim();
+  if (!reason) { toast('กรุณาระบุเหตุผลที่ตีกลับ', 'warn'); askReject(id); return; }
+  const o = idx.byId[id]; if (!o || o.status !== 'review') return;
+  const t = todayStr(), n = Object.assign({}, o);
+  n.status = 'inprog'; n.note = ('↩ ตีกลับ ' + fmtD(t) + ': ' + reason).slice(0, 300);
+  applyRules(n, t, false, true);
+  const r = await persist([n], [{ itemId: id, weekStart: mondayOf(t), date: t, pct: n.pct, status: 'inprog', note: '↩ ตีกลับ: ' + reason }]);
+  if (r) { RV.sel.delete(id); toast('ตีกลับงานแล้ว — เหตุผลจะแสดงในหน้า "อัปเดตรายสัปดาห์" ของผู้รับผิดชอบ', 'ok'); }
+}
+
+// ═══════════ EXPORT / PRINT ═══════════
+function csvCell(v) {
+  let s = String(v == null ? '' : v);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // กัน CSV injection ตอนเปิดใน Excel
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function exportCsv() {
+  const today = todayStr(), M = metrics(today);
+  const rows = [['ระดับ', 'โครงสร้าง', 'ชื่อ', 'แผนก', 'ผู้รับผิดชอบ', 'หมวด PQCDSM', 'ความสำคัญ', 'Plan เริ่ม', 'Plan สิ้นสุด', 'Actual เริ่ม', 'Actual เสร็จ', 'Actual %', 'Plan % (ควรถึง)', 'สถานะ', 'สุขภาพแผน', 'Baseline เริ่ม', 'Baseline สิ้นสุด', 'ต่างจาก Baseline (วัน)', 'Milestone', 'หมายเหตุ']];
+  const walk = (o, path) => {
+    if (!subtreeMatch(o)) return;
+    const m = M[o.id], h = health(o, m, today);
+    rows.push([LEVEL_NAME[o.level], path.join(' › '), o.name, o.dept, o.owner, o.cat, PRIOS[o.prio] || '', o.planStart, o.planEnd, o.actualStart, o.actualEnd, m.act, m.plan, STATUS[o.status].label, h.text, o.baseStart, o.baseEnd, (isDate(o.baseEnd) && isDate(o.planEnd)) ? diffDays(o.baseEnd, o.planEnd) : '', o.milestone ? 'Y' : '', o.note]);
+    (idx.kids[o.id] || []).forEach(c => walk(c, path.concat(o.name)));
+  };
+  idx.roots.filter(overlapsYear).forEach(m => walk(m, []));
+  if (rows.length < 2) { toast('ไม่มีข้อมูลให้ส่งออก', 'warn'); return; }
+  const csv = rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'ProjectFlow_' + yearBE(G.year) + '_' + today + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  toast('ส่งออก ' + (rows.length - 1) + ' รายการแล้ว', 'ok');
+}
+let printRestore = null;
+function printGantt() {
+  if (curPage === 'gantt' && G.scale !== 'month') { printRestore = G.scale; G.scale = 'month'; renderGantt(); } // สเกลเดือนพอดีหน้ากระดาษ
+  window.print();
+}
+window.addEventListener('afterprint', () => {
+  if (printRestore) { G.scale = printRestore; printRestore = null; G.needScroll = true; renderGantt(); }
+});
+
+// ═══════════ COPY PLAN ข้ามปี (Admin) ═══════════
+function openCopyYear() {
+  if (!isAdmin()) return;
+  const ms = idx.roots.filter(overlapsYear);
+  if (!ms.length) { toast('ไม่มี Master Plan ในปีที่แสดงอยู่', 'warn'); return; }
+  const ty = G.year + 1, yrs = [];
+  for (let y = G.year - 1; y <= G.year + 4; y++) if (y !== G.year) yrs.push(y);
+  $('modalCopy').innerHTML = `<h2>📋 คัดลอกแผนข้ามปี</h2>
+    <div class="crumb">คัดลอกโครงสร้าง Master Plan › Action › งานย่อย จากปี ${yearBE(G.year)} ไปปีใหม่ · เลื่อนวัน Plan ตามจำนวนปี · ล้าง Actual / สถานะ / ไฟล์แนบ / Baseline</div>
+    <div class="fld"><label class="fl">ปีปลายทาง</label><select class="in" id="cp_year">${yrs.map(y => opt(String(y), 'ปี ' + yearBE(y), String(ty))).join('')}</select></div>
+    <div class="fld"><label class="fl">เลือก Master Plan ที่จะคัดลอก</label>
+      <label class="chk"><input type="checkbox" id="cp_all" checked> <b>เลือกทั้งหมด</b></label>
+      ${ms.map(m => `<label class="chk"><input type="checkbox" class="cp_i" value="${esc(m.id)}" checked> <i class="dot" style="background:${colorOf(m)}"></i> ${esc(m.name)} <span class="msg">${esc(m.dept) || '—'} · ${descCount(m)} รายการย่อย</span></label>`).join('')}</div>
+    <div class="banner info">ตัวเลขปี (พ.ศ./ค.ศ. ของปีเดิม) ที่อยู่ในชื่อจะถูกเปลี่ยนเป็นปีใหม่อัตโนมัติ · dependency ที่ชี้ไปงานนอกชุดที่คัดลอกจะถูกตัดออก · ตรวจชื่อและวันที่อีกครั้งหลังคัดลอก</div>
+    <div class="foot" style="justify-content:flex-end"><button class="btn" onclick="$('ovCopy').classList.remove('on')">ยกเลิก</button><button class="btn pri" id="cp_go">📋 คัดลอก</button></div>`;
+  $('ovCopy').classList.add('on');
+  $('cp_all').onchange = e => document.querySelectorAll('.cp_i').forEach(x => { x.checked = e.target.checked; });
+  $('cp_go').onclick = async () => {
+    const ids = [...document.querySelectorAll('.cp_i:checked')].map(x => x.value);
+    if (!ids.length) { toast('กรุณาเลือกอย่างน้อย 1 แผน', 'warn'); return; }
+    const target = +$('cp_year').value;
+    $('ovCopy').classList.remove('on');
+    const r = await callAndApply('copyPlan', { ids, shift: target - G.year });
+    if (r) { toast('คัดลอกแล้ว ' + (r.copied || 0) + ' รายการ ไปปี ' + yearBE(target), 'ok'); G.year = target; G.needScroll = true; go('gantt'); }
+  };
+}
+
+// ═══════════ SNAPSHOT SPI / แนวโน้ม ═══════════
+const SN = { scope: 'all' };
+function ensureSnaps(force) {
+  if (snapLoading || (SNAPS !== null && !force)) return;
+  snapLoading = true;
+  api('getSnapshots').then(r => { SNAPS = r.snaps || []; })
+    .catch(() => { if (SNAPS === null) SNAPS = []; })
+    .finally(() => { snapLoading = false; if (curPage === 'dash') renderDash(); });
+}
+function dashBar() {
+  return `<div class="gtool"><b>📊 ภาพรวม</b><span class="msg">ปี ${yearBE(G.year)}</span>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">${isAdmin() ? '<button class="btn" onclick="snapNow()">📸 บันทึก Snapshot</button>' : ''}<button class="btn" onclick="exportCsv()">⬇ CSV รายการงาน</button><button class="btn" onclick="window.print()">🖨 พิมพ์ / PDF</button></div></div>`;
+}
+function lineSvg(title, pts, series, o) {
+  const Wd = 520, H = 210, L = 40, Rr = 12, T = 12, B = 26, iw = Wd - L - Rr, ih = H - T - B;
+  const t0 = d2n(pts[0].date), span = Math.max(1, d2n(pts[pts.length - 1].date) - t0);
+  const X = d => pts.length === 1 ? L + iw / 2 : L + (d2n(d) - t0) / span * iw;
+  const Y = v => T + ih - (clamp(v, o.min, o.max) - o.min) / (o.max - o.min) * ih;
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = o.min + (o.max - o.min) * i / 4, y = Y(v).toFixed(1);
+    g += `<line x1="${L}" x2="${Wd - Rr}" y1="${y}" y2="${y}" stroke="rgba(99,102,241,.14)"/><text x="${L - 6}" y="${(+y + 3.5).toFixed(1)}" text-anchor="end" font-size="10" fill="#6B6F8C">${o.fmt(v)}</text>`;
+  }
+  if (o.ref != null) { const y = Y(o.ref).toFixed(1); g += `<line x1="${L}" x2="${Wd - Rr}" y1="${y}" y2="${y}" stroke="#10B981" stroke-width="1.4" stroke-dasharray="5 4"/>`; }
+  const n = Math.min(pts.length, 6);
+  for (let i = 0; i < n; i++) {
+    const p = pts[n === 1 ? 0 : Math.round(i * (pts.length - 1) / (n - 1))];
+    g += `<text x="${X(p.date).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#6B6F8C">${fmtD(p.date)}</text>`;
+  }
+  series.forEach(s => {
+    const vp = pts.filter(p => s.get(p) != null);
+    if (!vp.length) return;
+    const d = vp.map((p, i) => (i ? 'L' : 'M') + X(p.date).toFixed(1) + ',' + Y(s.get(p)).toFixed(1)).join('');
+    g += `<path d="${d}" fill="none" stroke="${s.c}" stroke-width="2"${s.dash ? ' stroke-dasharray="5 4"' : ''}/>` +
+      vp.map(p => `<circle cx="${X(p.date).toFixed(1)}" cy="${Y(s.get(p)).toFixed(1)}" r="3.2" fill="${s.c}"><title>${fmtD(p.date)} · ${s.name} ${o.fmt(s.get(p))}</title></circle>`).join('');
+  });
+  const lg = series.map(s => `<span style="margin-right:12px"><i style="display:inline-block;width:14px;height:3px;background:${s.c};border-radius:2px;vertical-align:middle;margin-right:4px"></i>${s.name}</span>`).join('');
+  return `<div><div class="msg" style="margin-bottom:4px"><b style="color:var(--text)">${title}</b> &nbsp; ${lg}</div><svg viewBox="0 0 ${Wd} ${H}" style="width:100%;height:auto;display:block">${g}</svg></div>`;
+}
+function trendCard() {
+  if (SNAPS === null) ensureSnaps(false);
+  const yr = String(G.year), rows = (SNAPS || []).filter(s => s.date.slice(0, 4) === yr);
+  const masters = {}; rows.forEach(s => { if (s.scope === 'master') masters[s.id] = s.name; });
+  const sel = (SN.scope !== 'all' && !masters[SN.scope]) ? 'all' : SN.scope;
+  const pts = rows.filter(s => sel === 'all' ? s.scope === 'all' : (s.scope === 'master' && s.id === sel)).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  const picker = `<select class="in" style="width:auto;margin-left:auto;max-width:260px" onchange="SN.scope=this.value;renderDash()"><option value="all">รวมทุก Master Plan</option>${Object.keys(masters).map(id => opt(id, masters[id], sel)).join('')}</select>`;
+  let body;
+  if (SNAPS === null) body = '<div class="empty">กำลังโหลด…</div>';
+  else if (!pts.length) body = '<div class="empty">ยังไม่มี Snapshot ของปี ' + yearBE(G.year) + '<br><span class="msg">ระบบจะบันทึกอัตโนมัติทุกสัปดาห์เมื่อติดตั้ง trigger (ดูแท็บ "ผู้ดูแล") หรือ Admin กด 📸 ด้านบน</span></div>';
+  else {
+    const maxSpi = Math.max(1.5, Math.ceil(Math.max(...pts.map(p => p.spi || 0)) * 4) / 4);
+    body = `<div class="trendgrid">` +
+      lineSvg('ความคืบหน้า (%)', pts, [{ name: 'Plan', c: '#94A3B8', dash: true, get: p => p.plan }, { name: 'Actual', c: '#6366F1', get: p => p.act }], { min: 0, max: 100, fmt: v => Math.round(v) + '%' }) +
+      lineSvg('SPI (Actual ÷ Plan)', pts, [{ name: 'SPI', c: '#0F766E', get: p => p.spi }], { min: 0, max: maxSpi, ref: 1, fmt: v => v.toFixed(2) }) +
+      `</div><div class="msg" style="margin-top:6px">เส้นประเขียว = SPI 1.00 (เป็นไปตามแผน) · ${pts.length} สัปดาห์/ครั้งที่บันทึก</div>`;
+  }
+  return `<div class="card"><h3 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">📈 แนวโน้มความคืบหน้าและ SPI ${picker}</h3>${body}</div>`;
+}
+async function snapNow() {
+  const r = await callAndApply('snapshotNow', {}, 'บันทึก Snapshot แล้ว');
+  if (r && r.snaps) { SNAPS = r.snaps; if (curPage === 'dash') renderDash(); }
+}
+function sendDigestNow() {
+  openConfirm('ส่งสรุปประจำสัปดาห์', 'ส่งสรุป (อีเมล / LINE ตามที่ตั้งค่าไว้) ตอนนี้เลยหรือไม่ ?', '✉ ส่ง', async () => {
+    const r = await callAndApply('sendDigest', {});
+    const b = $('dgResult'); b.style.display = 'block';
+    if (!r) { b.innerHTML = '❌ ส่งไม่สำเร็จ — ดูข้อความแจ้งเตือนด้านล่างขวา'; return; }
+    const ok = [r.email ? 'อีเมล ' + r.email + ' ที่อยู่' : '', r.line ? 'LINE' : ''].filter(Boolean).join(' · ');
+    b.innerHTML = (ok ? '✅ ส่งแล้ว — ' + esc(ok) : '⚠️ ไม่มีช่องทางที่ส่งสำเร็จ') + (r.errors && r.errors.length ? '<br>' + r.errors.map(esc).join('<br>') : '');
+  });
+}
+
+// ═══════════ รายชื่อแผนก/คน (Config จากชีต) ═══════════
+const withCur = (list, cur) => (cur && !list.includes(cur)) ? list.concat([cur]) : list; // งานเดิมที่ใช้ชื่อซึ่งถูกลบออกจากรายชื่อ ต้องไม่ถูกล้างค่าตอนเปิดแก้ไข
+function fillLists() {
+  const set = (id, first, list) => {
+    const el = $(id); if (!el) return; const cur = el.value;
+    el.innerHTML = '<option value="all">' + first + '</option>' + list.map(d => '<option value="' + esc(d) + '">' + esc(d) + '</option>').join('');
+    el.value = list.includes(cur) ? cur : 'all';
+  };
+  set('fDept', 'ทุกแผนก', DEPTS); set('fOwner', 'ทุกคน', OWNERS);
+  set('wkDept', 'ทุกแผนก', DEPTS); set('wkOwner', 'ทุกคน', OWNERS); set('lDept', 'ทุกแผนก', DEPTS);
+  const fs = $('fSt'), fc = $('fCat');
+  if (fs) { fs.innerHTML = ST_OPTS.map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join(''); fs.value = G.st; }
+  if (fc) { fc.innerHTML = '<option value="all">ทุกหมวด PQCDSM</option>' + CATS.map(c => '<option value="' + esc(c) + '">' + esc(c) + '</option>').join(''); fc.value = G.cat; }
+  G.dept = $('fDept').value; G.owner = $('fOwner').value; W.dept = $('wkDept').value; W.owner = $('wkOwner').value; L.dept = $('lDept').value;
+  const dl = $('ownerList'); if (dl) dl.innerHTML = OWNERS.map(n => '<option value="' + esc(n) + '">').join('');
+}
+function applyConfig(c) {
+  const cl = a => Array.isArray(a) ? a.map(x => String(x).trim()).filter(Boolean) : [];
+  const d = cl(c.depts), o = cl(c.owners); let ch = false;
+  if (d.length && JSON.stringify(d) !== JSON.stringify(DEPTS)) { DEPTS = d; ch = true; }
+  if (o.length && JSON.stringify(o) !== JSON.stringify(OWNERS)) { OWNERS = o; ch = true; }
+  if (ch) fillLists();
+}
+// ข้อมูลเสริมที่ติดมากับคำตอบของเซิร์ฟเวอร์ (config / kpis / จำนวนความเห็น)
+function ingest(d) {
+  if (!d || typeof d !== 'object') return;
+  if (d.config) applyConfig(d.config);
+  if (Array.isArray(d.kpis)) KPIS = d.kpis;
+  if (d.ccount && typeof d.ccount === 'object') CC = d.ccount;
+}
+function renderAdmin(force) {
+  const a = $('cfgDepts'), b = $('cfgOwners'); if (!a || !b) return;
+  if (force || (document.activeElement !== a && document.activeElement !== b)) { a.value = DEPTS.join('\n'); b.value = OWNERS.join('\n'); }
+}
+function saveConfig() {
+  const split = id => $(id).value.split('\n').map(s => s.trim().replace(/,/g, ' ')).filter((s, i, a) => s && a.indexOf(s) === i);
+  const depts = split('cfgDepts'), owners = split('cfgOwners');
+  if (!depts.length || !owners.length) { toast('ต้องมีอย่างน้อย 1 แผนก และ 1 ผู้รับผิดชอบ', 'warn'); return; }
+  const gone = DEPTS.filter(d => !depts.includes(d)).concat(OWNERS.filter(n => !owners.includes(n)));
+  const used = gone.length ? items.filter(o => gone.includes(o.dept) || gone.includes(o.owner)).length : 0;
+  const go = async () => { const r = await callAndApply('saveConfig', { depts, owners }, 'บันทึกรายชื่อแล้ว'); if (r) renderAdmin(true); };
+  if (used) openConfirm('ยืนยันการลบชื่อออกจากรายการ', 'ชื่อ/แผนกที่ถูกลบออกยังถูกใช้อยู่ใน <b>' + used + '</b> รายการงาน — งานเหล่านั้นจะยังเก็บชื่อเดิมไว้ แต่ชื่อจะไม่โผล่ในตัวเลือกใหม่ ดำเนินการต่อหรือไม่?', '💾 บันทึก', go);
+  else go();
+}
+
+// ═══════════ โหลด / ข้อผิดพลาด ═══════════
+function errHtml() { return '<div class="empty">⚠️ ' + esc(loadErr) + '<div style="margin-top:14px"><button class="btn pri" onclick="reload(true)">🔄 ลองใหม่</button></div></div>'; }
+function skeleton() {
+  const rows = n => Array.from({ length: n }, (_, i) => '<div class="sk sk-row" style="width:' + (96 - (i % 4) * 9) + '%"></div>').join('');
+  if (curPage === 'gantt') $('gInner').innerHTML = '<div style="padding:12px 4px">' + rows(10) + '</div>';
+  else if (curPage === 'dash') $('dashBody').innerHTML = '<div class="kpis">' + '<div class="sk sk-kpi"></div>'.repeat(6) + '</div><div class="sk sk-card"></div><div class="sk sk-card"></div>';
+  else if (curPage === 'weekly') $('wkBody').innerHTML = '<tr><td colspan="8">' + rows(7) + '</td></tr>';
+  else if (curPage === 'review') $('revBody').innerHTML = '<tr><td colspan="8">' + rows(5) + '</td></tr>';
+  else if (curPage === 'load') $('loadBody').innerHTML = '<div style="padding:10px">' + rows(8) + '</div>';
+}
+
+// ═══════════ ตัวกรอง + มุมมองที่บันทึก ═══════════
+const filtersActive = () => G.dept !== 'all' || G.owner !== 'all' || !!G.q || G.st !== 'all' || G.cat !== 'all';
+function updFilterUI(n) {
+  if (!$('fClear')) return;
+  $('fClear').hidden = !filtersActive();
+  $('fCount').textContent = filtersActive() ? 'พบ ' + n + ' แถว' : '';
+}
+function syncFilterUI() { $('fDept').value = G.dept; $('fOwner').value = G.owner; $('fQ').value = G.qr || ''; $('fSt').value = G.st; $('fCat').value = G.cat; }
+function clearFilters() { G.dept = 'all'; G.owner = 'all'; G.q = ''; G.qr = ''; G.st = 'all'; G.cat = 'all'; syncFilterUI(); refreshViews(''); renderGantt(); }
+const VKEY = 'pf2_views';
+function loadViews() { try { const v = JSON.parse(store.get(VKEY) || '[]'); return Array.isArray(v) ? v.filter(x => x && x.name && x.f) : []; } catch (e) { return []; } }
+function refreshViews(sel) {
+  const el = $('fView'); if (!el) return;
+  el.innerHTML = '<option value="">⭐ มุมมองที่บันทึกไว้…</option>' + loadViews().map((v, i) => '<option value="' + i + '"' + (String(i) === String(sel) ? ' selected' : '') + '>' + esc(v.name) + '</option>').join('');
+  $('fViewDel').hidden = sel === '' || sel == null;
+}
+function applyView(i) {
+  if (i === '') { refreshViews(''); return; }
+  const v = loadViews()[+i]; if (!v) return; const f = v.f;
+  G.dept = DEPTS.includes(f.dept) ? f.dept : 'all'; G.owner = OWNERS.includes(f.owner) ? f.owner : 'all';
+  G.qr = String(f.q || ''); G.q = G.qr.trim().toLowerCase();
+  G.st = ST_OPTS.some(s => s[0] === f.st) ? f.st : 'all'; G.cat = CATS.includes(f.cat) ? f.cat : 'all';
+  if (SC[f.scale]) { G.scale = f.scale; G.needScroll = true; }
+  syncFilterUI(); refreshViews(i); renderGantt();
+}
+function saveView() {
+  openConfirm('บันทึกมุมมอง', 'ตั้งชื่อมุมมองจากตัวกรองและสเกลที่ใช้อยู่ตอนนี้ (เก็บในเครื่องนี้)<div style="margin-top:10px"><input class="in" id="vwName" maxlength="40" placeholder="เช่น งานเลยกำหนด Calotte 4A"></div>', '💾 บันทึก', () => {
+    const name = ($('vwName').value || '').trim(); if (!name) { toast('กรุณาตั้งชื่อมุมมอง', 'warn'); return; }
+    const vs = loadViews().filter(v => v.name !== name);
+    vs.push({ name, f: { dept: G.dept, owner: G.owner, q: G.qr, st: G.st, cat: G.cat, scale: G.scale } });
+    store.set(VKEY, JSON.stringify(vs.slice(-20)));
+    refreshViews(String(Math.min(vs.length, 20) - 1)); toast('บันทึกมุมมอง "' + name + '" แล้ว', 'ok');
+  });
+  setTimeout(() => { const i = $('vwName'); if (i) i.focus(); }, 50);
+}
+function delView() {
+  const i = $('fView').value; const v = loadViews()[+i]; if (i === '' || !v) return;
+  openConfirm('ลบมุมมอง', 'ลบมุมมอง <b>' + esc(v.name) + '</b> ?', '🗑 ลบ', () => { const vs = loadViews(); vs.splice(+i, 1); store.set(VKEY, JSON.stringify(vs)); refreshViews(''); });
+}
+
+// ═══════════ เลิกทำ (Ctrl+Z / ปุ่มในแจ้งเตือน) ═══════════
+function setUndo(label, fn) { UNDO = { fn, until: Date.now() + 60000 }; toast(label, 'ok', { label: '↩ เลิกทำ', fn: runUndo }); }
+async function runUndo() {
+  const u = UNDO; UNDO = null;
+  if (!u || Date.now() > u.until) { toast('หมดเวลาเลิกทำ (60 วินาที)', 'warn'); return; }
+  await u.fn();
+}
+
+// ═══════════ ลากเรียงลำดับแถว ═══════════
+const isDesc = (x, anc) => { let c = x, g = 0; while (c && g++ < 7) { if (c.id === anc.id) return true; c = c.parentId ? idx.byId[c.parentId] : null; } return false; };
+$('gInner').addEventListener('pointerdown', e => {
+  const h = e.target.closest('.dh'); if (!h || e.button) return;
+  const row = h.closest('.g-row'), o = idx.byId[row.dataset.id]; if (!o || !canEditPlan(o)) return;
+  RO = { o, row, tgt: null, before: true, moved: false };
+  row.classList.add('ro-src'); e.preventDefault();
+  document.addEventListener('pointermove', roMove); document.addEventListener('pointerup', roEnd, { once: true });
+});
+function roClear() { const ln = $('gInner').querySelector('.ro-line'); if (ln) ln.remove(); }
+function roMove(e) {
+  if (!RO) return; RO.moved = true;
+  const el = document.elementFromPoint(e.clientX, e.clientY), row = el && el.closest ? el.closest('.g-row') : null;
+  roClear(); RO.tgt = null; if (!row) return;
+  const pid = RO.o.parentId || ''; let t = idx.byId[row.dataset.id], g = 0;
+  while (t && (t.parentId || '') !== pid && g++ < 6) t = t.parentId ? idx.byId[t.parentId] : null; // ไล่ขึ้นไปหาพี่น้องระดับเดียวกับแถวที่ลาก
+  if (!t || t.id === RO.o.id) return;
+  const hr = $('gInner').querySelector('.g-row[data-id="' + t.id + '"]'); if (!hr) return;
+  const rc = hr.getBoundingClientRect(); RO.before = e.clientY < rc.top + rc.height / 2; RO.tgt = t;
+  const i = lastRows.findIndex(r => r.id === t.id); let top = i;
+  if (!RO.before) { let j = i + 1; while (j < lastRows.length && isDesc(lastRows[j], t)) j++; top = j; }
+  const body = $('gInner').querySelector('.g-body'); if (!body || i < 0) return;
+  const ln = document.createElement('div'); ln.className = 'ro-line'; ln.style.top = (top * ROWH - 1) + 'px'; body.appendChild(ln);
+}
+async function roEnd() {
+  document.removeEventListener('pointermove', roMove); roClear();
+  const r = RO; RO = null; if (!r) return;
+  r.row.classList.remove('ro-src');
+  if (r.moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 80); }
+  if (!r.tgt) return;
+  const sibs = r.o.parentId && idx.byId[r.o.parentId] ? idx.kids[r.o.parentId] : idx.roots;
+  const list = sibs.filter(x => x.id !== r.o.id), at = list.findIndex(x => x.id === r.tgt.id) + (r.before ? 0 : 1);
+  list.splice(at, 0, r.o);
+  const prev = [], ch = [];
+  list.forEach((s, k) => { if (s.order !== k + 1) { prev.push({ id: s.id, order: s.order }); ch.push(Object.assign({}, s, { order: k + 1 })); } });
+  if (!ch.length) return;
+  const res = await persist(ch);
+  if (res && !(res.conflicts || []).length && !(res.denied || []).length) setUndo('จัดลำดับแถวแล้ว', async () => {
+    const back = prev.map(p => idx.byId[p.id] && Object.assign({}, idx.byId[p.id], { order: p.order })).filter(Boolean);
+    if (back.length) { await persist(back); toast('เลิกทำแล้ว', 'ok'); }
+  });
+}
+
+// ═══════════ ความเห็นต่อรายการ ═══════════
+const CMT = { id: '' };
+const mention = s => esc(s).replace(/@([^\s@]{1,30})/g, '<b class="mn">@$1</b>');
+function initComments(id) {
+  CMT.id = id;
+  const who = $('cm_who'); if (who) who.value = store.get('pf2_me') || '';
+  $('cm_go').onclick = () => postComment(id);
+  loadComments(id);
+}
+async function loadComments(id) {
+  try { const r = await api('getComments', { itemId: id }); if (CMT.id === id) renderComments(r.comments || []); }
+  catch (e) { const b = $('m_cm'); if (b) b.innerHTML = '<span class="msg">โหลดความเห็นไม่สำเร็จ — ' + esc(friendlyErr(e)) + '</span>'; }
+}
+function renderComments(list) {
+  const b = $('m_cm'); if (!b) return;
+  $('m_cmn').textContent = list.length ? '(' + list.length + ')' : '';
+  b.innerHTML = list.length ? list.map(c => '<div class="cm"><div class="h2"><b style="color:var(--text)">' + esc(c.author) + '</b>' + (c.role === 'admin' ? '<span class="chip gray">Admin</span>' : '') +
+    '<span>' + fmtDT(c.at) + '</span>' + (isAdmin() ? '<span style="margin-left:auto;cursor:pointer;padding:0 4px" data-cd="' + esc(c.id) + '" title="ลบความเห็น">✕</span>' : '') + '</div><div class="tx">' + mention(c.text) + '</div></div>').join('')
+    : '<span class="msg">ยังไม่มีความเห็น</span>';
+  b.querySelectorAll('[data-cd]').forEach(x => {
+    x.onclick = async () => { try { const r = await api('deleteComment', { id: x.dataset.cd, itemId: CMT.id }); renderComments(r.comments || []); renderCurrent(); } catch (e) { handleErr(e); } };
+  });
+}
+async function postComment(id) {
+  const tx = $('cm_tx').value.trim(), who = $('cm_who').value.trim();
+  if (!tx) { toast('กรุณาพิมพ์ความเห็น', 'warn'); return; }
+  if (who) store.set('pf2_me', who);
+  const btn = $('cm_go'); btn.disabled = true;
+  try { const r = await api('addComment', { itemId: id, text: tx, author: who }); $('cm_tx').value = ''; renderComments(r.comments || []); renderCurrent(); }
+  catch (e) { handleErr(e); } finally { btn.disabled = false; }
+}
+
+// ═══════════ KPI ผลลัพธ์ ═══════════
+function spark(k, c) {
+  const pts = c.pts, W2 = 150, H2 = 40, vals = pts.map(p => p[1]).concat([+k.baseline, +k.target]);
+  const mn = Math.min(...vals), mx = Math.max(...vals), rg = mx - mn || 1, Y = v => 4 + (H2 - 8) * (1 - (v - mn) / rg);
+  const t0 = pts.length ? d2n(pts[0][0]) : 0, sp = pts.length > 1 ? d2n(pts[pts.length - 1][0]) - t0 : 1;
+  const X = d => pts.length < 2 ? W2 / 2 : 4 + (d2n(d) - t0) / sp * (W2 - 8);
+  const col = { ok: '#10B981', warn: '#F59E0B', bad: '#EF4444', gray: '#6366F1' }[c.cls];
+  const path = pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join('');
+  return '<svg viewBox="0 0 ' + W2 + ' ' + H2 + '" style="width:100%;max-width:170px;height:40px;display:block"><line x1="0" x2="' + W2 + '" y1="' + Y(+k.target).toFixed(1) + '" y2="' + Y(+k.target).toFixed(1) + '" stroke="#10B981" stroke-width="1.2" stroke-dasharray="4 3"/>' +
+    (path ? '<path d="' + path + '" fill="none" stroke="' + col + '" stroke-width="2"/>' : '') +
+    pts.map(p => '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="2.6" fill="' + col + '"><title>' + fmtD(p[0]) + ' · ' + p[1] + ' ' + esc(k.unit) + '</title></circle>').join('') + '</svg>';
+}
+function kpiRow(k, m, today) {
+  const c = kpiCalc(k, today, m.planStart, m.planEnd), u = esc(k.unit), f = v => (v == null || !isFinite(v)) ? '—' : String(Math.round(v * 100) / 100);
+  const ach = c.ach == null ? 0 : clamp(c.ach, 0, 100), bar = { ok: '#10B981', warn: '#F59E0B', bad: '#EF4444', gray: '#94A3B8' }[c.cls];
+  return '<div class="kr" data-kid="' + esc(k.id) + '"><div><b>' + esc(k.name) + '</b><div class="msg">' + (c.lower ? '↓ ยิ่งต่ำยิ่งดี' : '↑ ยิ่งสูงยิ่งดี') + '</div></div>' +
+    '<div>' + spark(k, c) + '</div>' +
+    '<div class="msg" style="line-height:1.7">เริ่ม <b>' + f(k.baseline) + '</b> → ล่าสุด <b style="color:var(--text)">' + (c.last ? f(c.last[1]) : '—') + '</b> ' + u + (c.last ? ' <span>(' + fmtD(c.last[0]) + ')</span>' : '') + '<br>เป้า <b>' + f(k.target) + '</b> ' + u + '</div>' +
+    '<div><div class="msg" style="display:flex;justify-content:space-between"><span>บรรลุเป้า</span><b>' + (c.ach == null ? '—' : c.ach + '%') + '</b></div>' +
+    '<div class="pbar" style="position:relative"><i style="width:' + ach + '%;background:' + bar + '"></i>' + (c.exp != null ? '<s style="position:absolute;top:0;bottom:0;left:' + c.exp + '%;width:2px;background:#1E1B3A" title="ควรถึง ณ วันนี้ ' + c.exp + '%"></s>' : '') + '</div>' +
+    '<span class="chip ' + c.cls + '" style="margin-top:5px">' + esc(c.text) + '</span></div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-kv="' + esc(k.id) + '">＋ ค่า</button>' + (isAdmin() ? '<button class="btn" data-ke="' + esc(k.id) + '">✎</button>' : '') + '</div></div>';
+}
+function kpiCard(ms, today) {
+  const by = {}; KPIS.forEach(k => { (by[k.masterId] = by[k.masterId] || []).push(k); });
+  const shown = ms.filter(m => by[m.id]);
+  const head = '<h3 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🎯 KPI ผลลัพธ์ เทียบเป้าหมาย <span class="msg">(ผูกกับ Master Plan · วัดผลลัพธ์จริง เช่น Defect %, OEE — ต่างจาก % ความคืบหน้างาน)</span>' + (isAdmin() ? '<button class="btn" style="margin-left:auto" id="kpiAdd">＋ เพิ่ม KPI</button>' : '') + '</h3>';
+  if (!shown.length) return '<div class="card" id="kpiCard">' + head + '<div class="empty" style="padding:26px">' + (isAdmin() ? 'ยังไม่มี KPI — กด "＋ เพิ่ม KPI" แล้วเลือก Master Plan ที่ต้องการวัดผล' : 'ยังไม่มี KPI — ให้ Admin เพิ่มตัวชี้วัดผลลัพธ์ที่ต้องการติดตาม') + '</div></div>';
+  return '<div class="card" id="kpiCard">' + head + shown.map(m => '<div class="sec" style="margin-top:12px"><i class="dot" style="background:' + colorOf(m) + '"></i> ' + esc(m.name) + '</div>' + by[m.id].map(k => kpiRow(k, m, today)).join('')).join('') + '</div>';
+}
+$('dashBody').addEventListener('click', e => {
+  if (e.target.closest('#kpiAdd')) { openKpi(); return; }
+  const v = e.target.closest('[data-kv]'); if (v) { openKpiValue(v.dataset.kv); return; }
+  const ed = e.target.closest('[data-ke]'); if (ed) openKpi(ed.dataset.ke);
+});
+function openKpi(id) {
+  if (!isAdmin()) return;
+  if (!idx.roots.length) { toast('ต้องมี Master Plan ก่อนจึงเพิ่ม KPI ได้', 'warn'); return; }
+  const ex = id ? KPIS.find(k => k.id === id) : null;
+  const k = ex || { masterId: (idx.roots.filter(overlapsYear)[0] || idx.roots[0]).id, name: '', unit: '%', dir: 'lower', baseline: '', target: '', points: [] };
+  $('modalKpi').innerHTML = `<h2>🎯 ${ex ? 'แก้ไข' : 'เพิ่ม'} KPI</h2><div class="crumb">ตัวชี้วัดผลลัพธ์ที่ผูกกับ Master Plan — ใช้เทียบ "ผลลัพธ์จริง" กับเป้าหมาย (ระบบเทียบกับเส้นตรงตามเวลาของ Master Plan)</div>
+    <div class="fld"><label class="fl">Master Plan</label><select class="in" id="k_m">${idx.roots.map(m => opt(m.id, m.name, k.masterId)).join('')}</select></div>
+    <div class="fld"><label class="fl">ชื่อ KPI</label><input class="in" id="k_name" maxlength="80" value="${esc(k.name)}" placeholder="เช่น Defect rate Calotte 4A"></div>
+    <div class="grid2"><div class="fld"><label class="fl">หน่วย</label><input class="in" id="k_unit" maxlength="12" value="${esc(k.unit)}" placeholder="% / PPM / ชิ้น"></div>
+      <div class="fld"><label class="fl">ทิศทางที่ดี</label><select class="in" id="k_dir">${opt('lower', '↓ ยิ่งต่ำยิ่งดี (Defect, ของเสีย)', k.dir)}${opt('higher', '↑ ยิ่งสูงยิ่งดี (OEE, Yield)', k.dir)}</select></div></div>
+    <div class="grid2"><div class="fld"><label class="fl">ค่าเริ่มต้น (Baseline)</label><input class="in" id="k_base" type="number" step="any" value="${esc(k.baseline)}"></div>
+      <div class="fld"><label class="fl">เป้าหมาย (Target)</label><input class="in" id="k_tgt" type="number" step="any" value="${esc(k.target)}"></div></div>
+    ${ex ? '<div class="sec">ค่าที่บันทึกไว้</div><div class="hist" id="k_pts" style="max-height:150px"></div>' : ''}
+    <div class="foot"><div>${ex ? '<button class="btn danger" id="k_del">🗑 ลบ KPI</button>' : ''}</div><div style="display:flex;gap:8px"><button class="btn" id="k_cancel">ปิด</button><button class="btn pri" id="k_save">✓ บันทึก</button></div></div>`;
+  $('ovKpi').classList.add('on');
+  $('k_cancel').onclick = () => $('ovKpi').classList.remove('on');
+  $('k_save').onclick = async () => {
+    const r = await callAndApply('saveKpi', { kpi: { id: ex ? ex.id : '', masterId: $('k_m').value, name: $('k_name').value, unit: $('k_unit').value, dir: $('k_dir').value, baseline: $('k_base').value, target: $('k_tgt').value } }, 'บันทึก KPI แล้ว');
+    if (r) $('ovKpi').classList.remove('on');
+  };
+  if (ex) {
+    $('k_del').onclick = () => openConfirm('ลบ KPI', 'ลบ <b>' + esc(ex.name) + '</b> พร้อมค่าที่บันทึกไว้ทั้งหมด ?', '🗑 ลบ', async () => { const r = await callAndApply('deleteKpi', { id: ex.id }, 'ลบ KPI แล้ว'); if (r) $('ovKpi').classList.remove('on'); });
+    const draw = () => {
+      const cur = KPIS.find(x => x.id === ex.id), box = $('k_pts'); if (!box) return;
+      const ps = cur ? cur.points.slice().reverse() : [];
+      box.innerHTML = ps.length ? ps.map(p => '<div><span>' + fmtDY(p[0]) + '</span><span><b>' + p[1] + '</b> ' + esc(ex.unit) + ' <i style="color:var(--dim)">' + esc(p[2]) + '</i> <b data-pd="' + esc(p[0]) + '" style="cursor:pointer;color:var(--bad);margin-left:8px" title="ลบค่านี้">✕</b></span></div>').join('') : '<span class="msg">ยังไม่มีค่าที่บันทึก</span>';
+      box.querySelectorAll('[data-pd]').forEach(x => { x.onclick = async () => { const r = await callAndApply('deleteKpiPoint', { id: ex.id, date: x.dataset.pd }); if (r) draw(); }; });
+    };
+    draw();
+  }
+}
+function openKpiValue(id) {
+  const k = KPIS.find(x => x.id === id); if (!k) return;
+  const t = todayStr(), last = k.points.length ? k.points[k.points.length - 1] : null;
+  $('modalKpi').innerHTML = `<h2>＋ บันทึกค่าจริง</h2><div class="crumb">${esc(k.name)} · ${k.dir === 'lower' ? '↓ ยิ่งต่ำยิ่งดี' : '↑ ยิ่งสูงยิ่งดี'} · เป้า ${esc(k.target)} ${esc(k.unit)}${last ? ' · ล่าสุด ' + last[1] + ' ' + esc(k.unit) + ' (' + fmtD(last[0]) + ')' : ''}</div>
+    <div class="grid2"><div class="fld"><label class="fl">วันที่วัด</label><input class="in" id="kv_d" type="date" value="${t}" max="${t}"></div>
+      <div class="fld"><label class="fl">ค่าที่ได้ (${esc(k.unit)})</label><input class="in" id="kv_v" type="number" step="any" inputmode="decimal"></div></div>
+    <div class="fld"><label class="fl">ชื่อของคุณ (ไม่บังคับ)</label><input class="in" id="kv_by" list="ownerList" maxlength="40" value="${esc(store.get('pf2_me') || '')}"></div>
+    <div class="msg">บันทึกซ้ำวันเดียวกัน = ทับค่าเดิมของวันนั้น</div>
+    <div class="foot" style="justify-content:flex-end"><button class="btn" id="kv_cancel">ยกเลิก</button><button class="btn pri" id="kv_save">✓ บันทึก</button></div>`;
+  $('ovKpi').classList.add('on');
+  $('kv_cancel').onclick = () => $('ovKpi').classList.remove('on');
+  setTimeout(() => { const i = $('kv_v'); if (i) i.focus(); }, 50);
+  $('kv_save').onclick = async () => {
+    const v = $('kv_v').value, by = $('kv_by').value.trim(); if (v === '') { toast('กรุณากรอกค่าที่ได้', 'warn'); return; }
+    if (by) store.set('pf2_me', by);
+    const r = await callAndApply('addKpiPoint', { id, date: $('kv_d').value, value: v, by }, 'บันทึกค่าแล้ว');
+    if (r) $('ovKpi').classList.remove('on');
+  };
+}
+
+// ═══════════ ภาระงานรายคน ═══════════
+function loadShift(k) { if (!L.start) L.start = addDays(mondayOf(todayStr()), -14); L.start = addDays(L.start, k * 7); renderLoad(); }
+function renderLoad() {
+  const today = todayStr(); if (!L.start) L.start = addDays(mondayOf(today), -14);
+  const thisWk = mondayOf(today), weeks = Array.from({ length: L.weeks }, (_, i) => addDays(L.start, i * 7));
+  const leaves = []; const collect = o => { const ch = idx.kids[o.id]; if (ch) ch.forEach(collect); else if (L.dept === 'all' || o.dept === L.dept) leaves.push(o); }; idx.roots.forEach(collect);
+  LROWS = workloadCalc(leaves, OWNERS, weeks, today);
+  $('lThr').value = L.thr;
+  const heat = n => !n ? '' : n >= L.thr ? 'background:rgba(239,68,68,' + Math.min(.6, .3 + (n - L.thr) * .05).toFixed(2) + ');color:#7F1D1D' : 'background:rgba(99,102,241,' + (0.08 + 0.34 * n / L.thr).toFixed(2) + ')';
+  let h = '<table class="wl"><thead><tr><th>ผู้รับผิดชอบ</th><th>เลยกำหนด</th><th>งานค้าง</th>' + weeks.map(w => '<th' + (w === thisWk ? ' class="cw"' : '') + ' title="' + fmtDY(w) + '">W' + isoWeek(w) + '<br>' + fmtD(w) + '</th>').join('') + '</tr></thead><tbody>';
+  h += LROWS.length ? LROWS.map((r, ri) => '<tr><td data-ro="' + ri + '" title="ดูงานของคนนี้ในแผนงาน">' + esc(r.owner) + '</td><td style="' + (r.late.length ? 'color:var(--bad);font-weight:700' : 'color:var(--dim)') + '">' + (r.late.length || '—') + '</td><td>' + r.open + '</td>' +
+    r.cells.map((c, ci) => '<td class="c' + (L.sel && L.sel.r === ri && L.sel.c === ci ? ' sel' : '') + '" data-r="' + ri + '" data-c="' + ci + '" style="' + heat(c.length) + '">' + (c.length || '') + '</td>').join('') + '</tr>').join('')
+    : '<tr><td colspan="' + (weeks.length + 3) + '" class="empty">ไม่มีงานที่ยังไม่เสร็จ' + (L.dept !== 'all' ? ' ในแผนกนี้' : '') + '</td></tr>';
+  $('loadBody').innerHTML = h + '</tbody></table>';
+  renderLoadDetail(weeks);
+}
+function renderLoadDetail(weeks) {
+  const box = $('loadDetail'), s = L.sel;
+  if (!s || !LROWS[s.r] || !LROWS[s.r].cells[s.c]) { box.innerHTML = '<span class="msg">คลิกช่องตัวเลขเพื่อดูรายการงานของคนและสัปดาห์นั้น</span>'; return; }
+  const r = LROWS[s.r], list = r.cells[s.c], ws = weeks[s.c], today = todayStr();
+  box.innerHTML = '<div style="font-weight:700;margin-bottom:6px">' + esc(r.owner) + ' · W' + isoWeek(ws) + ' (' + fmtD(ws) + ' – ' + fmtD(addDays(ws, 6)) + ') · ' + list.length + ' งาน</div>' +
+    (list.length ? list.map(o => '<div style="display:flex;gap:10px;align-items:center;padding:3px 0;border-bottom:1px dashed rgba(99,102,241,.15)"><a href="#" data-op="' + esc(o.id) + '" style="color:var(--accent);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(o.name) + '</a><span class="msg">' + fmtD(o.planStart) + ' – ' + fmtD(o.planEnd) + '</span>' +
+      (isDate(o.planEnd) && today > o.planEnd ? '<span class="chip bad">เลย ' + diffDays(o.planEnd, today) + ' วัน</span>' : '<span class="chip gray">' + STATUS[o.status].label + '</span>') + '</div>').join('') : '<span class="msg">ไม่มีงาน</span>');
+}
+// mouseup (not click): changing the threshold input re-renders the table on blur, which would swallow the first click
+$('loadBody').addEventListener('mouseup', e => {
+  if (e.button) return;
+  const c = e.target.closest('td.c'); if (c) { L.sel = { r: +c.dataset.r, c: +c.dataset.c }; renderLoad(); return; }
+  const o = e.target.closest('[data-ro]');
+  if (o && LROWS[+o.dataset.ro]) { const n = LROWS[+o.dataset.ro].owner; G.owner = OWNERS.includes(n) ? n : 'all'; G.dept = 'all'; G.q = ''; G.qr = ''; G.st = 'all'; G.cat = 'all'; syncFilterUI(); refreshViews(''); go('gantt'); }
+});
+$('loadDetail').addEventListener('click', e => { const a = e.target.closest('[data-op]'); if (a) { e.preventDefault(); openItem(a.dataset.op); } });
+
+// ═══════════ ตัวชี้วัดเพิ่มเติม (ภาพรวม) ═══════════
+function statsRow(S) {
+  const d = v => v == null ? '—' : (Math.round(v * 10) / 10);
+  const box = (l, v, s, c) => '<div class="kpi"><div class="l">' + l + '</div><div class="v"' + (c ? ' style="color:' + c + '"' : '') + '>' + v + '</div><div class="s">' + s + '</div></div>';
+  return '<div class="kpis">' +
+    box('เสร็จตรงเวลา', S.onTimeRate == null ? '—' : S.onTimeRate + '%', S.fin ? 'จากงานที่เสร็จแล้ว ' + S.fin + ' รายการ' : 'ยังไม่มีงานที่เสร็จ', S.onTimeRate == null ? '' : S.onTimeRate < 70 ? 'var(--bad)' : 'var(--ok)') +
+    box('เสร็จช้าเฉลี่ย', S.avgSlip == null ? '—' : d(S.avgSlip) + '<span style="font-size:14px;color:var(--dim)"> วัน</span>', S.slipN ? 'เฉพาะงานที่เสร็จช้า ' + S.slipN + ' รายการ' : 'ไม่มีงานที่เสร็จช้า', S.avgSlip ? 'var(--warn)' : '') +
+    box('เลยกำหนดเฉลี่ย', S.avgOverdue == null ? '—' : d(S.avgOverdue) + '<span style="font-size:14px;color:var(--dim)"> วัน</span>', S.overdueN ? 'นานสุด ' + S.maxOverdue + ' วัน · ' + S.overdueN + ' งาน' : 'ไม่มีงานเลยกำหนด', S.overdueN ? 'var(--bad)' : '') +
+    box('รออนุมัติ', S.reviewAll, S.avgReview == null ? 'ไม่มีงานรอตรวจ' : 'รอเฉลี่ย ' + d(S.avgReview) + ' วัน · นานสุด ' + S.maxReview + ' วัน', S.reviewAll ? 'var(--accent)' : '') +
+    box('ปิดงานใน 30 วันล่าสุด', S.done30, 'งานที่เสร็จจริง', 'var(--ok)') + '</div>';
+}
+function groupCard(byDept, byCat) {
+  const tb = (arr, label) => '<table class="t"><thead><tr><th>' + label + '</th><th style="text-align:center">งาน</th><th style="text-align:center">เสร็จ</th><th style="text-align:center">เลย</th><th>Plan / Actual</th></tr></thead><tbody>' +
+    arr.map(r => '<tr><td><b>' + esc(r.k) + '</b></td><td style="text-align:center">' + r.n + '</td><td style="text-align:center">' + r.done + '</td><td style="text-align:center;' + (r.late ? 'color:var(--bad);font-weight:700' : '') + '">' + r.late + '</td>' +
+      '<td style="min-width:140px"><div class="msg" style="display:flex;justify-content:space-between"><span>P ' + r.plan + '%</span><b>A ' + r.act + '%</b></div><div class="pbar"><i style="width:' + r.act + '%;background:' + (r.act < r.plan - 10 ? '#F59E0B' : '#6366F1') + '"></i></div></td></tr>').join('') + '</tbody></table>';
+  return '<div class="card"><h3>🏭 สรุปตามแผนก และตามหมวด PQCDSM</h3><div class="grid2" style="gap:20px"><div>' + (byDept.length ? tb(byDept, 'แผนก') : '') + '</div><div>' + (byCat.length ? tb(byCat, 'หมวด PQCDSM') : '') + '</div></div></div>';
+}
+
+// ═══════════ MIGRATION ═══════════
+async function runMigrate() {
+  const mode = document.querySelector('input[name=mmode]:checked').value, overwrite = $('mOver').checked;
+  openConfirm('นำเข้าข้อมูลเดิม', 'ระบบจะอ่านชีต Tasks / Projects / Announcements เดิมแล้วสร้างรายการใน v2 (ไม่แก้ไขชีตเดิม) ดำเนินการต่อหรือไม่?', '📥 นำเข้า', async () => {
+    const r = await callAndApply('migrate', { mode, overwrite });
+    const box = $('mResult'); box.style.display = 'block';
+    box.innerHTML = r ? `✅ นำเข้าสำเร็จ — Master Plan ${r.stat.masters} · Action ${r.stat.actions} · งานย่อย ${r.stat.tasks} รายการ${r.stat.notices ? ` · ประกาศ ${r.stat.notices} รายการ` : ''}${r.stat.skipped ? ` · ข้าม ${r.stat.skipped} รายการที่เคยนำเข้าแล้ว` : ''}<br>ไปที่แท็บ "แผนงาน" เพื่อตรวจสอบ และแก้ % / วันที่ Actual ที่เป็นค่าประมาณ` : '❌ นำเข้าไม่สำเร็จ ดูข้อความแจ้งเตือนด้านล่างขวา';
+  });
+}
+
+// ═══════════ BOOT ═══════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeItem(); closeConfirm(); $('ovNotice').classList.remove('on'); $('ovCopy').classList.remove('on'); $('ovKpi').classList.remove('on'); }
+  const tg = (document.activeElement && document.activeElement.tagName) || '';
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && curPage === 'gantt' && UNDO && !modalOpen() && !/INPUT|TEXTAREA|SELECT/.test(tg)) { e.preventDefault(); runUndo(); }
+});
+$('ovKpi').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('on'); });
+$('ovCopy').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('on'); });
+$('ovNotice').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('on'); });
+$('ovItem').addEventListener('click', e => { if (e.target === e.currentTarget) closeItem(); });
+$('ovConfirm').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm(); });
+// เช็กเวอร์ชันข้อมูลทุก 30 วินาที (เบามาก) — ดึงข้อมูลชุดเต็มเฉพาะเมื่อมีคนแก้จริง · ข้ามถ้ากำลังพิมพ์/แก้ไข/บันทึก/ลากแท่ง
+// (ร่างอัปเดตรายสัปดาห์เก็บในเครื่องอยู่แล้ว จึงไม่ต้องเตือนตอนปิดหน้า)
+const typingWeekly = () => { const a = document.activeElement; return !!(a && a.closest && a.closest('#wkBody')); };
+const typingAdmin = () => { const a = document.activeElement; return !!(a && a.closest && a.closest('#pg-admin')); };
+async function pollOnce() {
+  if (!session || document.hidden || saving || modalOpen() || drag || RO || typingWeekly() || typingAdmin()) return;
+  try { const v = await api('getVersion'); if (v.ver !== lastVer) await reload(false); }
+  catch (e) { if (e.code === 'AUTH') handleErr(e); else setSync('err', e.message); }
+}
+setInterval(pollOnce, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) pollOnce(); });
+function netState() { $('netbar').style.display = navigator.onLine === false ? 'block' : 'none'; }
+window.addEventListener('offline', netState);
+window.addEventListener('online', () => { netState(); pollOnce(); });
+netState();
+// PWA: ใช้ได้เมื่อเปิดผ่าน https (เว็บโฮสต์) พร้อมไฟล์ manifest.webmanifest / sw.js / icon-*.png · เปิดไฟล์จากเครื่องตรงๆ ยังใช้งานได้ตามปกติ
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) { try { navigator.serviceWorker.register('sw.js').catch(() => { }); } catch (e) { } }
+initLogin();
+</script>
+</body>
+</html>
